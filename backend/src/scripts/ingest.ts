@@ -11,9 +11,9 @@ const dataDir = path.join(process.cwd(), 'data');
 const lancedbDir = path.join(process.cwd(), 'lancedb');
 const collectionName = 'swasthya_setu';
 
-async function main() {
+export async function main() { // <-- THE FIX IS HERE
   console.log('Starting ingestion process with LanceDB...');
-  
+
   if (await fs.stat(lancedbDir).catch(() => false)) {
     console.log('Removing old LanceDB directory...');
     await fs.rm(lancedbDir, { recursive: true, force: true });
@@ -52,11 +52,11 @@ async function main() {
   console.log(`Created ${chunks.length} text chunks.`);
 
   // 3. Initialize embeddings
-  console.log('Initializing embedding model (this may download on first run)...');
+  console.log('Initializing embedding model...');
   const embeddings = new HuggingFaceTransformersEmbeddings({
     modelName: 'Xenova/all-MiniLM-L6-v2',
   });
-  
+
   // 4. Ingest into LanceDB
   console.log('Ingesting chunks into LanceDB...');
   const db = await connect(lancedbDir);
@@ -68,13 +68,16 @@ async function main() {
       source: " "
     }]
   });
-  
+
   await LanceDB.fromDocuments(chunks, embeddings, { table });
-  
+
   console.log('✅ Ingestion complete!');
   console.log(`LanceDB vector store created in: ${lancedbDir}`);
 }
 
-main().catch((error) => {
-  console.error('An unexpected error occurred:', error);
-});
+// This allows the script to be run directly, while also being importable
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('An unexpected error occurred during direct script execution:', error);
+  });
+}
