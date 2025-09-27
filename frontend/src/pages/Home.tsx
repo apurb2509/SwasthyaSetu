@@ -1,8 +1,24 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Carousel from '../components/Carousel';
 import PhoneForm from '../components/PhoneForm';
 
+// Function to fetch the health status from our backend
+const fetchHealthStatus = async () => {
+  const response = await fetch('/api/health');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
 const Home: React.FC = () => {
+  const { data, error, isLoading } = useQuery({
+    queryKey: ['healthCheck'],
+    queryFn: fetchHealthStatus,
+    retry: false, // Don't retry on failure for this check
+  });
+
   return (
     <div>
       {/* Hero Section */}
@@ -38,7 +54,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Web Chat CTA - Hidden on small screens for now */}
+      {/* Web Chat CTA */}
       <section className="py-12 md:py-16 bg-white">
           <div className="container mx-auto px-4 text-center">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">Have a Health Question?</h3>
@@ -49,6 +65,15 @@ const Home: React.FC = () => {
                <p className="text-gray-500 mt-4 md:hidden">Web chat is available on larger screens after login.</p>
           </div>
       </section>
+
+      {/* Footer / Status Check */}
+      <footer className="bg-gray-800 text-white text-center p-4">
+          <div className="container mx-auto">
+              {isLoading && <p>Connecting to server...</p>}
+              {error && <p>❌ Could not connect to server.</p>}
+              {data && <p>✅ Backend Status: {data.status}</p>}
+          </div>
+      </footer>
     </div>
   );
 };
