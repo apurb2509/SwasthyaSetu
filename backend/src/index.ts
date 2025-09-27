@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import twilio from 'twilio';
 import multer from 'multer';
+import cron from 'node-cron';
 
 // --- Create necessary directories on startup ---
 const dataDir = path.join(process.cwd(), 'data');
@@ -32,6 +33,8 @@ import { askQuestion } from './services/rag.service';
 import { processIncomingMessage } from './services/language.service';
 import { authMiddleware } from './middleware/auth.middleware';
 import { main as ingestDocuments } from './scripts/ingest';
+import { sendDailyHealthTips } from './services/scheduler.service';
+import { sendWeeklyNewsletter } from './services/newsletter.service';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -82,24 +85,16 @@ app.post('/api/sms', async (req: Request, res: Response) => {
 });
 
 app.post('/api/admin/upload', 
-  (req, res, next) => {
-    console.log('STEP 1: Upload request received by server.');
-    next();
-  },
   authMiddleware, 
   upload.single('document'), 
   async (req: Request, res: Response) => {
-    console.log('STEP 4: Entering final request handler.');
     if (!req.file) {
-      console.log('FINAL HANDLER: No file found on request. Sending 400 error.');
       return res.status(400).json({ error: 'No file uploaded.' });
     }
     
-    console.log('FINAL HANDLER: File received. Sending immediate 200 OK response.');
     res.status(200).json({ message: 'File received. Knowledge base update started in the background.' });
-    console.log('STEP 5: Response sent to frontend.');
 
-    console.log(`Triggering background re-ingestion for ${req.file.originalname}...`);
+    console.log(`File uploaded: ${req.file.originalname}. Triggering background re-ingestion...`);
     
     ingestDocuments().then(() => {
       console.log('✅ Background ingestion completed successfully.');
@@ -115,6 +110,30 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: 'An unexpected server error occurred.' });
 });
 
+
+// --- SCHEDULED TASKS ---
+console.log('Setting up scheduled tasks...');
+
+// 1. Daily SMS Health Tips (runs every day at 8:00 AM)
+cron.schedule('0 8 * * *', () => {
+  console.log('--- Running Daily SMS Task ---');
+  sendDailyHealthTips();
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
+});
+
+// 2. Weekly Email Newsletter (runs every Sunday at 9:00 AM)
+cron.schedule('0 9 * * 0', () => {
+  console.log('--- Running Weekly Newsletter Task ---');
+  sendWeeklyNewsletter();
+}, {
+  scheduled: true,
+  timezone: "Asia/Kolkata"
+});
+
+
+// --- START SERVER ---
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
