@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 const diseases = [
   {
@@ -37,7 +37,7 @@ const diseases = [
 
 const Carousel: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   const resetTimeout = () => {
     if (timeoutRef.current) {
@@ -45,21 +45,21 @@ const Carousel: React.FC = () => {
     }
   };
 
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === diseases.length - 1 ? 0 : prevIndex + 1
+    );
+  }, []);
+
   useEffect(() => {
     resetTimeout();
-    timeoutRef.current = setTimeout(
-      () =>
-        setCurrentIndex((prevIndex) =>
-          prevIndex === diseases.length - 1 ? 0 : prevIndex + 1
-        ),
-      6000 // Change slide every 6 seconds
-    );
+    timeoutRef.current = window.setTimeout(nextSlide, 3000); // Set to 3 seconds
 
     return () => {
       resetTimeout();
     };
-  }, [currentIndex]);
-
+  }, [currentIndex, nextSlide]);
+  
   const goToSlide = (slideIndex: number) => {
     setCurrentIndex(slideIndex);
   };
@@ -76,44 +76,54 @@ const Carousel: React.FC = () => {
     setCurrentIndex(newIndex);
   };
 
-
   return (
-    <div className="max-w-4xl mx-auto relative group" onMouseEnter={resetTimeout}>
+    <div 
+      className="max-w-4xl mx-auto relative group"
+      onMouseEnter={resetTimeout}
+      onMouseLeave={() => {
+        timeoutRef.current = window.setTimeout(nextSlide, 3000); // Set to 3 seconds
+      }}
+    >
       <div className="w-full h-80 md:h-72 rounded-lg shadow-lg overflow-hidden relative">
-        {diseases.map((disease, index) => (
-          <div
-            key={disease.name}
-            className={`absolute w-full h-full transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <div className={`w-full h-full p-6 md:p-8 flex flex-col justify-center ${disease.bgColor} ${disease.textColor}`}>
-              <h4 className="text-2xl font-bold mb-3">{disease.name}</h4>
-              <p className="font-semibold mb-3">Prevention: <span className="font-normal">{disease.prevention}</span></p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <h5 className="font-bold mb-1">Do's:</h5>
-                  <ul className="list-disc list-inside">
-                    {disease.dos.map(item => <li key={item}>{item}</li>)}
-                  </ul>
-                </div>
-                <div>
-                  <h5 className="font-bold mb-1">Don'ts:</h5>
-                  <ul className="list-disc list-inside">
-                    {disease.donts.map(item => <li key={item}>{item}</li>)}
-                  </ul>
+        <div 
+          className="flex transition-transform duration-500 ease-in-out h-full"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {diseases.map((disease) => (
+            <div
+              key={disease.name}
+              className="w-full h-full flex-shrink-0"
+            >
+              <div className={`w-full h-full p-6 md:p-8 flex flex-col justify-center ${disease.bgColor} ${disease.textColor}`}>
+                <h4 className="text-2xl font-bold mb-3">{disease.name}</h4>
+                <p className="font-semibold mb-3">Prevention: <span className="font-normal">{disease.prevention}</span></p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h5 className="font-bold mb-1">Do's:</h5>
+                    <ul className="list-disc list-inside">
+                      {disease.dos.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 className="font-bold mb-1">Don'ts:</h5>
+                    <ul className="list-disc list-inside">
+                      {disease.donts.map(item => <li key={item}>{item}</li>)}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
       
-      {/* Left Arrow */}
-      <button onClick={goToPrev} className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-12 p-2 bg-white/50 group-hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100">
+      <button onClick={goToPrev} className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-12 p-2 bg-white/50 group-hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+        <span className="sr-only">Previous Slide</span>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
       </button>
 
-      {/* Right Arrow */}
-      <button onClick={goToNext} className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-12 p-2 bg-white/50 group-hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100">
+      <button onClick={goToNext} className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-12 p-2 bg-white/50 group-hover:bg-white rounded-full shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+        <span className="sr-only">Next Slide</span>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
       </button>
 
