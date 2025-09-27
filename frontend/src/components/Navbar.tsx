@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabaseClient';
 const Navbar: React.FC = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
+  const adminPanelUrl = import.meta.env.VITE_ADMIN_PANEL_URL || '/';
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -23,13 +24,24 @@ const Navbar: React.FC = () => {
             </Link>
           </div>
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-center space-x-4">
               <Link
                 to="/chat"
                 className="text-gray-600 hover:bg-gray-100 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
               >
                 Chat Assistant
               </Link>
+              
+              {/* --- NEW ADMIN LOGIN BUTTON --- */}
+              <a
+                href={adminPanelUrl}
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Admin Login
+              </a>
+
               {session ? (
                 <button
                   onClick={handleLogout}
