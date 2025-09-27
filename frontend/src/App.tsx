@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
+import Chat from './pages/Chat'; // <-- Import the new page
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} /> {/* <-- Add the new route */}
         </Routes>
       </main>
     </div>

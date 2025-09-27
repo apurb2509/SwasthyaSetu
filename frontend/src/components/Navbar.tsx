@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // <-- Import Link
 
 const Navbar: React.FC = () => {
   return (
@@ -6,13 +7,14 @@ const Navbar: React.FC = () => {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-green-600">SwasthyaSetu</h1>
+            <Link to="/" className="text-2xl font-bold text-green-600">SwasthyaSetu</Link>
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <a href="#" className="text-gray-700 hover:bg-green-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
-                Sign In
-              </a>
+              {/* This is now a Link to our chat page */}
+              <Link to="/chat" className="text-gray-700 hover:bg-green-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                Chat Assistant
+              </Link>
               <a href="#" className="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium">
                 Sign Up
               </a>
