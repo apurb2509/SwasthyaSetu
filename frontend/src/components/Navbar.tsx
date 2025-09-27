@@ -1,7 +1,17 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // <-- Import Link
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 
 const Navbar: React.FC = () => {
+  const { session } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/'); // Redirect to home page after logout
+  };
+
   return (
     <header className="bg-white shadow-md">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,16 +21,25 @@ const Navbar: React.FC = () => {
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              {/* This is now a Link to our chat page */}
               <Link to="/chat" className="text-gray-700 hover:bg-green-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
                 Chat Assistant
               </Link>
-              <a href="#" className="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium">
-                Sign Up
-              </a>
+              {session ? (
+                <button
+                  onClick={handleLogout}
+                  className="bg-red-600 text-white hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link to="/login" className="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium">
+                  Login
+                </Link>
+              )}
             </div>
           </div>
           <div className="-mr-2 flex md:hidden">
+            {/* Mobile menu button can be enhanced later */}
             <button type="button" className="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
               <span className="sr-only">Open main menu</span>
               <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
