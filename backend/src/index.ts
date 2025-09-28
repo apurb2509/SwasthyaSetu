@@ -5,6 +5,7 @@ import cors from 'cors';
 import twilio from 'twilio';
 import multer from 'multer';
 import cron from 'node-cron';
+import { createClient, User } from '@supabase/supabase-js';
 
 // --- Create necessary directories on startup ---
 const dataDir = path.join(process.cwd(), 'data');
@@ -12,7 +13,6 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
   console.log(`Created data directory at: ${dataDir}`);
 }
-// ---
 
 // --- Crash and Error Logging Setup ---
 const logStream = fs.createWriteStream(path.join(process.cwd(), 'error.log'), { flags: 'a' });
@@ -27,7 +27,6 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error(`${timestamp} Unhandled Rejection at:`, promise, 'reason:', reason);
   logStream.write(`${timestamp} Unhandled Rejection: ${reason}\n`);
 });
-// --- End of Logging Setup ---
 
 import { askQuestion } from './services/rag.service';
 import { processIncomingMessage } from './services/language.service';
@@ -35,6 +34,7 @@ import { authMiddleware } from './middleware/auth.middleware';
 import { main as ingestDocuments } from './scripts/ingest';
 import { sendDailyHealthTips } from './services/scheduler.service';
 import { sendWeeklyNewsletter } from './services/newsletter.service';
+import { getChatHistory, saveChatMessage } from './services/chat.service';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -44,33 +44,58 @@ app.use(cors());
 app.use(express.json());
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'data/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-  },
+    destination: (req, file, cb) => { cb(null, 'data/'); },
+    filename: (req, file, cb) => { cb(null, file.originalname); },
 });
 const upload = multer({ storage });
 
-app.get('/api/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'UP', timestamp: new Date().toISOString() });
-});
+const getUser = async (token: string): Promise<User | null> => {
+    const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error) return null;
+    return user;
+};
 
-app.post('/api/chat', async (req: Request, res: Response) => {
+// --- API ROUTES ---
+
+app.get('/api/health', (req, res) => res.status(200).json({ status: 'UP' }));
+
+app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { question } = req.body;
-    if (!question) {
-      return res.status(400).json({ error: 'Question is required.' });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!question || !token) {
+      return res.status(400).json({ error: 'Question and token are required.' });
     }
+    const user = await getUser(token);
+    if (!user) return res.status(401).json({ error: 'Invalid token' });
+
+    await saveChatMessage(user.id, 'user', question as string);
     const answer = await askQuestion(question as string);
+    await saveChatMessage(user.id, 'bot', answer);
+
     res.status(200).json({ answer });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get an answer.' });
   }
 });
 
-app.post('/api/sms', async (req: Request, res: Response) => {
+app.get('/api/chat/history', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) return res.status(401).json({ error: 'Unauthorized' });
+        
+        const user = await getUser(token);
+        if (!user) return res.status(401).json({ error: 'Invalid user' });
+
+        const history = await getChatHistory(user.id);
+        res.status(200).json(history);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch chat history.' });
+    }
+});
+
+app.post('/api/sms', async (req, res) => {
   const twiml = new twilio.twiml.MessagingResponse();
   const incomingMsg = req.body.Body;
   try {
@@ -114,7 +139,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 // --- SCHEDULED TASKS ---
 console.log('Setting up scheduled tasks...');
 
-// 1. Daily SMS Health Tips (runs every day at 8:00 AM)
+// Daily SMS Health Tips (runs every day at 8:00 AM)
 cron.schedule('0 8 * * *', () => {
   console.log('--- Running Daily SMS Task ---');
   sendDailyHealthTips();
@@ -123,7 +148,7 @@ cron.schedule('0 8 * * *', () => {
   timezone: "Asia/Kolkata"
 });
 
-// 2. Weekly Email Newsletter (runs every Sunday at 9:00 AM)
+// Weekly Email Newsletter (runs every Sunday at 9:00 AM)
 cron.schedule('0 9 * * 0', () => {
   console.log('--- Running Weekly Newsletter Task ---');
   sendWeeklyNewsletter();
