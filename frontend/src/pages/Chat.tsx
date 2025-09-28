@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
-import logo from '../assets/swasthyasetu_logo.png';
 
 interface Message {
   content: string;
@@ -13,11 +12,8 @@ interface Message {
 // --- API Functions ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) throw new Error("Not authenticated");
-
-  const response = await fetch('/api/chat/history', {
-    headers: { 'Authorization': `Bearer ${session.access_token}` }
-  });
+  if (!session) return [];
+  const response = await fetch('/api/chat/history', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
   if (!response.ok) throw new Error('Failed to fetch history');
   return response.json();
 };
@@ -25,54 +21,34 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
-
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`
-    },
-    body: JSON.stringify({ question }),
-  });
+  const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, body: JSON.stringify({ question }), });
   if (!response.ok) throw new Error('Network response was not ok');
   return response.json();
 };
 
 // --- Helper Components ---
-const UserAvatar = () => (
-  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm">
-    U
-  </div>
-);
-
-const BotAvatar = () => (
-  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center p-1">
-    <img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" />
-  </div>
-);
-
+const UserAvatar = () => ( <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">U</div> );
+const BotAvatar = () => ( <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm"><img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" className="w-full h-full object-contain" /></div> );
 const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
   const isUser = message.sender === 'user';
   const time = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-
   return (
-    <div className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-end gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {isUser ? <UserAvatar /> : <BotAvatar />}
-      <div className={`rounded-xl p-3 max-w-lg shadow-sm ${isUser ? 'bg-green-600 text-white' : 'bg-white text-gray-800'}`}>
-        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-        {time && <p className={`text-xs mt-1 ${isUser ? 'text-green-200' : 'text-gray-400'}`}>{time}</p>}
+      <div className={`rounded-xl p-3 max-w-lg shadow-sm ${isUser ? 'bg-green-600 text-white' : 'bg-white text-gray-800 border'}`}>
+        <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+        {time && <p className={`text-xs mt-1 text-right ${isUser ? 'text-green-200' : 'text-gray-400'}`}>{time}</p>}
       </div>
     </div>
   );
 };
-
 const formatDateSeparator = (date: Date) => {
     const day = date.getDate();
     const month = date.toLocaleString('en-GB', { month: 'long' });
     const year = date.getFullYear();
     const dayOfWeek = date.toLocaleString('en-GB', { weekday: 'short' }).toUpperCase();
     return `${day} ${month}, ${year} (${dayOfWeek})`;
-}
+};
 
 // --- Main Chat Component ---
 const Chat: React.FC = () => {
@@ -107,12 +83,11 @@ const Chat: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
     },
-    onError: (error) => {
-        setDisplayedMessages(prev => [...prev, {
-            sender: 'error',
-            content: `Sorry, an error occurred: ${error.message}`,
-            created_at: new Date().toISOString()
-        }]);
+    onError: (error: any) => {
+      setDisplayedMessages(prev => [
+        ...prev,
+        { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }
+      ]);
     }
   });
 
@@ -123,14 +98,12 @@ const Chat: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || mutation.isPending) return;
-    
     const userMessage: Message = {
       content: input,
       sender: 'user',
-      created_at: new Date().toISOString(),
+      created_at: new Date().toISOString()
     };
     setDisplayedMessages(prevMessages => [...prevMessages, userMessage]);
-
     mutation.mutate(input);
     setInput('');
   };
@@ -140,23 +113,21 @@ const Chat: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-green-50/50">
-      <header className="bg-white shadow-sm p-4 text-center border-b border-green-200">
-        <h1 className="text-xl font-bold text-green-800">SwasthyaDoot</h1>
-        <p className="text-sm text-green-700">Your AI Health Assistant</p>
+    <div className="flex flex-col h-[calc(100vh-4rem)] bg-gray-100">
+      <header className="bg-white p-4 text-center border-b shadow-sm">
+        <h1 className="text-xl font-bold text-gray-800">SwasthyaDoot</h1>
+        <p className="text-sm text-gray-500">Your AI Health Assistant</p>
       </header>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5">
         {displayedMessages.map((msg, index) => {
           const currentDate = new Date(msg.created_at);
           const prevDate = index > 0 ? new Date(displayedMessages[index - 1].created_at) : null;
           const showDateSeparator = !prevDate || currentDate.toDateString() !== prevDate.toDateString();
-
           return (
             <React.Fragment key={index}>
               {showDateSeparator && (
                 <div className="text-center my-3">
-                  <span className="text-xs text-gray-500 bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-200">
+                  <span className="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
                     {formatDateSeparator(currentDate)}
                   </span>
                 </div>
@@ -165,7 +136,6 @@ const Chat: React.FC = () => {
             </React.Fragment>
           );
         })}
-
         {mutation.isPending && (
           <div className="flex items-start gap-3 mt-4">
             <BotAvatar />
@@ -176,25 +146,24 @@ const Chat: React.FC = () => {
         )}
         <div ref={messagesEndRef} />
       </div>
-
-      <div className="p-4 bg-white border-t border-gray-200 shadow-inner">
-        <form className="flex items-center space-x-3" onSubmit={handleSubmit}>
+      <div className="p-3 bg-white border-t border-gray-200">
+        <form className="flex items-center space-x-2" onSubmit={handleSubmit}>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a health question..."
-            className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
             autoComplete="off"
             disabled={mutation.isPending}
           />
           <button
             type="submit"
-            className="bg-green-600 text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:bg-gray-400 transition-colors"
+            className="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-700 disabled:bg-gray-400 transition-colors"
             aria-label="Send message"
             disabled={mutation.isPending}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </button>

@@ -1,9 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import Chat from './pages/Chat';
 import LoginPage from './pages/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute'; // <-- Import ProtectedRoute
+import Chat from './pages/Chat';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -12,15 +12,15 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route
             path="/chat"
             element={
-              <ProtectedRoute> {/* <-- Wrap the Chat component */}
+              <ProtectedRoute>
                 <Chat />
               </ProtectedRoute>
             }
           />
-          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </main>
     </div>
