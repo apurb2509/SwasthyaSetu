@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 
+// No logo import here
+
 const Navbar: React.FC = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
@@ -10,7 +12,7 @@ const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/'); // Redirect to home page after logout
+    navigate('/');
   };
 
   return (
@@ -19,6 +21,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
+              {/* Use the direct public path */}
               <img className="h-8 w-auto" src="/swasthyasetu_logo.png" alt="SwasthyaSetu Logo" />
               <span className="text-xl font-bold text-gray-800 hidden sm:block">SwasthyaSetu</span>
             </Link>
@@ -32,16 +35,6 @@ const Navbar: React.FC = () => {
                 Chat Assistant
               </Link>
               
-              {/* --- NEW ADMIN LOGIN BUTTON --- */}
-              <a
-                href={adminPanelUrl}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-              >
-                Admin Login
-              </a>
-
               {session ? (
                 <button
                   onClick={handleLogout}
@@ -50,12 +43,22 @@ const Navbar: React.FC = () => {
                   Logout
                 </button>
               ) : (
-                <Link
-                  to="/login"
-                  className="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                >
-                  Login
-                </Link>
+                <>
+                  <a
+                    href={adminPanelUrl}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                  >
+                    Admin Login
+                  </a>
+                  <Link
+                    to="/login"
+                    className="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                  >
+                    Login
+                  </Link>
+                </>
               )}
             </div>
           </div>
