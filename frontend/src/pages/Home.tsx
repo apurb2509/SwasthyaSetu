@@ -165,14 +165,6 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white text-center p-4">
-          <div className="container mx-auto">
-              {isLoading && <p>Connecting to server...</p>}
-              {error && <p>❌ Could not connect to server.</p>}
-              {data && <p>✅ Backend Status: {data.status}</p>}
-          </div>
-      </footer>
     </div>
   );
 };
