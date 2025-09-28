@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Carousel from '../components/Carousel';
-import PhoneForm from '../components/PhoneForm';
+import Carousel from '../components/Carousel.tsx';
+import PhoneForm from '../components/PhoneForm.tsx';
 
 // --- Icon Components (unchanged) ---
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
@@ -23,7 +23,13 @@ const features = [
 ];
 const backgroundImages = Array.from({ length: 9 }, (_, i) => `/images/heroimage_${i + 1}.jpg`);
 
-const fetchHealthStatus = async () => { /* ... */ };
+const fetchHealthStatus = async () => {
+  const response = await fetch('/api/health');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
 
 const Home: React.FC = () => {
   const { data, error, isLoading } = useQuery({ queryKey: ['healthCheck'], queryFn: fetchHealthStatus, retry: false });
@@ -42,7 +48,7 @@ const Home: React.FC = () => {
   const nextTextSlide = useCallback(() => { setCurrentTextSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1)); }, []);
   useEffect(() => {
     resetTextTimeout();
-    textTimeoutRef.current = window.setTimeout(nextTextSlide, 7000);
+    textTimeoutRef.current = window.setTimeout(nextTextSlide, 6000);
     return () => resetTextTimeout();
   }, [currentTextSlide, nextTextSlide]);
   const goToPrevTextSlide = () => { setCurrentTextSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1)); };
@@ -50,7 +56,7 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      {/* --- REDESIGNED Hero Section --- */}
+      {/* --- Hero Section --- */}
       <section className="relative w-full aspect-video bg-gray-800">
         <div className="absolute inset-0 z-0">
           {backgroundImages.map((img, index) => (
@@ -61,11 +67,9 @@ const Home: React.FC = () => {
             />
           ))}
         </div>
-
         <div className="relative z-10 w-full h-full flex flex-col justify-center items-center p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
-            {/* --- THE FIX IS HERE --- Reduced margin-bottom from mb-12 to mb-8 */}
-            <div className="relative max-w-4xl mx-auto mb-10">
+            <div className="relative max-w-4xl mx-auto mb-8">
               <div className="overflow-hidden">
                 <div
                   className="flex transition-transform duration-700 ease-in-out"
@@ -86,13 +90,12 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <button onClick={goToPrevTextSlide} className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
               </button>
               <button onClick={goToNextTextSlide} className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
-            
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => (
                 <div key={index} className="bg-white/20 backdrop-blur-md p-4 rounded-lg shadow-lg text-center transform transition-transform duration-300 hover:scale-110 hover:-rotate-3 border border-white/20">
@@ -107,7 +110,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* --- Other Sections (unchanged) --- */}
+      {/* Seasonal Health Awareness */}
       <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4">
           <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
@@ -117,7 +120,40 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-gray-50">
+      {/* --- NEW Vision and Goals Section --- */}
+      <section className="py-12 md:py-20 bg-green-50/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-800">Our Vision and Goals</h3>
+            <p className="text-gray-600 mt-2">Building a healthier, more informed rural India, one query at a time.</p>
+          </div>
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
+              <h4 className="font-bold text-lg text-gray-800">Tackle Misinformation with Facts</h4>
+              <p className="mt-1 text-gray-600">Our primary goal is to replace harmful rumors on social media with verified, easy-to-understand health information from trusted sources like the WHO and ICMR.</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
+              <h4 className="font-bold text-lg text-gray-800">Ensure Digital Inclusion</h4>
+              <p className="mt-1 text-gray-600">We are committed to bridging the digital divide by providing equal access to information for both smartphone users via our web app and basic phone users through SMS.</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
+              <h4 className="font-bold text-lg text-gray-800">Simplify Government Health Schemes</h4>
+              <p className="mt-1 text-gray-600">We aim to demystify complex but vital government schemes, ensuring every citizen understands their entitlements and how to access them.</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
+              <h4 className="font-bold text-lg text-gray-800">Promote Preventive Healthcare</h4>
+              <p className="mt-1 text-gray-600">Through daily tips and seasonal awareness, we focus on prevention as the most effective strategy to reduce the burden of disease in rural communities.</p>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
+              <h4 className="font-bold text-lg text-gray-800">Empower Local Health Workers</h4>
+              <p className="mt-1 text-gray-600">The admin dashboard serves as a tool for local NGOs and ASHA workers, allowing them to keep the AI's knowledge base updated with the latest local health advisories.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Get Daily Health Tips */}
+      <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
             Get Daily Health Tips
@@ -129,6 +165,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="bg-gray-800 text-white text-center p-4">
           <div className="container mx-auto">
               {isLoading && <p>Connecting to server...</p>}
@@ -141,3 +178,4 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
