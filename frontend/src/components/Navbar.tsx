@@ -4,11 +4,50 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useTranslation } from 'react-i18next';
 
-// --- Language Toggle Component ---
+// --- Language Toggle Component (code is from previous step, assumed to be correct) ---
 const LanguageToggle: React.FC = () => {
   const { i18n } = useTranslation();
   const { session } = useAuth();
-  // ... (rest of the component is unchanged)
+
+  const changeLanguage = async (lng: string) => {
+    i18n.changeLanguage(lng);
+    if (session) {
+      await supabase
+        .from('profiles')
+        .update({ language_preference: lng })
+        .eq('id', session.user.id);
+    }
+  };
+  
+  useEffect(() => {
+      async function fetchLanguagePref() {
+          if(session) {
+              const { data } = await supabase
+                .from('profiles')
+                .select('language_preference')
+                .eq('id', session.user.id)
+                .single();
+            if(data?.language_preference) {
+                i18n.changeLanguage(data.language_preference);
+            }
+          }
+      }
+      fetchLanguagePref();
+  }, [session, i18n]);
+
+  return (
+    <div className="relative">
+      <select 
+        onChange={(e) => changeLanguage(e.target.value)}
+        value={i18n.language}
+        className="text-sm bg-gray-100 border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+      >
+        <option value="en">English</option>
+        <option value="hi">हिंदी</option>
+        <option value="bn">বাংলা</option>
+      </select>
+    </div>
+  );
 };
 
 const Navbar: React.FC = () => {
@@ -17,12 +56,10 @@ const Navbar: React.FC = () => {
   const { t } = useTranslation();
   const adminPanelUrl = import.meta.env.VITE_ADMIN_PANEL_URL;
   
-  // --- NEW state for profile dropdown ---
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch user's name
   useEffect(() => {
     if (session) {
       const getProfile = async () => {
@@ -39,7 +76,6 @@ const Navbar: React.FC = () => {
     }
   }, [session]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -75,7 +111,10 @@ const Navbar: React.FC = () => {
           </Link>
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
-              <Link to="/chat" className="nav-link">{t('Chat Assistant')}</Link>
+              {/* --- STYLING FIX IS HERE --- */}
+              <Link to="/chat" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors duration-200">
+                {t('Chat Assistant')}
+              </Link>
               
               {session ? (
                 <div className="relative" ref={dropdownRef}>
@@ -91,14 +130,25 @@ const Navbar: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <a href={adminPanelUrl} target="_blank" rel="noopener noreferrer" className="nav-link-outline">{t('Admin Login')}</a>
-                  <Link to="/login" className="nav-link-primary">{t('Login')}</Link>
+                  <a href={adminPanelUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-200">
+                    {t('Admin Login')}
+                  </a>
+                  <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm">
+                    {t('Login')}
+                  </Link>
                 </>
               )}
               <LanguageToggle />
             </div>
           </div>
-          {/* ... mobile menu ... */}
+          <div className="-mr-2 flex md:hidden">
+            <button type="button" className="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+              <span className="sr-only">Open main menu</span>
+              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
         </div>
       </nav>
     </header>
