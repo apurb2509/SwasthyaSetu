@@ -10,6 +10,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import Disclaimer from './pages/Disclaimer';
 import ProfilePage from './pages/ProfilePage';
+import SignupPrompt from './components/SignupPrompt'; // <-- Import the new component
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <SignupPrompt /> {/* <-- Add the component here */}
     </div>
   );
 }
