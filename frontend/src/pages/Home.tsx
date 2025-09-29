@@ -66,7 +66,7 @@ const Home: React.FC = () => {
             />
           ))}
         </div>
-        <div className="relative z-10 w-full h-full flex flex-col justify-center items-center p-4 bg-black/30 backdrop-blur-sm text-white">
+        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-56 p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
             <div className="relative max-w-4xl mx-auto mb-8">
               <div className="overflow-hidden">
