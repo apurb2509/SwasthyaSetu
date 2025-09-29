@@ -73,7 +73,7 @@ const Home: React.FC = () => {
             <img 
               src="/transparent_swasthyasetu_logo.png" 
               alt="SwasthyaSetu Transparent Logo" 
-              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6"
+              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6 opacity-75"
             />
 
             <div className="relative max-w-4xl mx-auto mb-8">
