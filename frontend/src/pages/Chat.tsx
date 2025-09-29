@@ -9,7 +9,7 @@ interface Message {
   created_at: string;
 }
 
-// --- API Functions ---
+// --- API Functions (unchanged) ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
@@ -27,14 +27,28 @@ const postQuestion = async (question: string): Promise<{ answer: string }> => {
 };
 
 // --- Helper Components ---
-const UserAvatar = () => ( <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">U</div> );
+const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => (
+  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+    {initials}
+  </div>
+);
 const BotAvatar = () => ( <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm"><img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" className="w-full h-full object-contain" /></div> );
-const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
+const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ message, userName }) => {
   const isUser = message.sender === 'user';
   const time = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+  
+  const getInitials = (name: string) => {
+    if (!name) return '?';
+    const names = name.split(' ');
+    if (names.length > 1 && names[names.length - 1]) {
+      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  };
+
   return (
     <div className={`flex items-end gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
-      {isUser ? <UserAvatar /> : <BotAvatar />}
+      {isUser ? <UserAvatar initials={getInitials(userName)} /> : <BotAvatar />}
       <div className={`rounded-xl p-3 max-w-lg shadow-sm ${isUser ? 'bg-green-600 text-white' : 'bg-white text-gray-800 border'}`}>
         <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
         {time && <p className={`text-xs mt-1 text-right ${isUser ? 'text-green-200' : 'text-gray-400'}`}>{time}</p>}
@@ -56,7 +70,25 @@ const Chat: React.FC = () => {
   const queryClient = useQueryClient();
   const [input, setInput] = useState('');
   const [displayedMessages, setDisplayedMessages] = useState<Message[]>([]);
+  const [userName, setUserName] = useState(''); // <-- NEW: State for user's name
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // --- NEW: Fetch user's name from profile ---
+  useEffect(() => {
+    if (session) {
+      const getProfile = async () => {
+        const { data } = await supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', session.user.id)
+          .single();
+        if (data && data.name) {
+          setUserName(data.name);
+        }
+      };
+      getProfile();
+    }
+  }, [session]);
 
   const { data: fetchedMessages, isLoading } = useQuery<Message[]>({
     queryKey: ['chatHistory'],
@@ -113,61 +145,64 @@ const Chat: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] bg-gray-100">
-      <header className="bg-white p-4 text-center border-b shadow-sm">
-        <h1 className="text-xl font-bold text-gray-800">SwasthyaDoot</h1>
-        <p className="text-sm text-gray-500">Your AI Health Assistant</p>
-      </header>
-      <div className="flex-1 overflow-y-auto p-4 space-y-5">
-        {displayedMessages.map((msg, index) => {
-          const currentDate = new Date(msg.created_at);
-          const prevDate = index > 0 ? new Date(displayedMessages[index - 1].created_at) : null;
-          const showDateSeparator = !prevDate || currentDate.toDateString() !== prevDate.toDateString();
-          return (
-            <React.Fragment key={index}>
-              {showDateSeparator && (
-                <div className="text-center my-3">
-                  <span className="text-xs text-gray-500 bg-gray-200 px-3 py-1 rounded-full">
-                    {formatDateSeparator(currentDate)}
-                  </span>
-                </div>
-              )}
-              <MessageBubble message={msg} />
-            </React.Fragment>
-          );
-        })}
-        {mutation.isPending && (
-          <div className="flex items-start gap-3 mt-4">
-            <BotAvatar />
-            <div className="rounded-xl p-3 max-w-lg bg-white shadow-sm">
-              <p className="text-sm text-gray-500 animate-pulse">Thinking...</p>
+    <div className="w-full h-full bg-gradient-to-br from-green-50 to-cyan-50 p-4 sm:p-6 md:p-8 flex items-center justify-center">
+      <div className="max-w-4xl w-full h-full max-h-[calc(100vh-8rem)] bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col border border-white">
+        <header className="p-4 text-center border-b-2 border-green-200/50">
+          <h1 className="text-2xl font-bold text-green-800">SwasthyaDoot</h1>
+          <p className="text-sm text-gray-500">Your AI Health Assistant</p>
+        </header>
+        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+          {displayedMessages.map((msg, index) => {
+            const currentDate = new Date(msg.created_at);
+            const prevDate = index > 0 ? new Date(displayedMessages[index - 1].created_at) : null;
+            const showDateSeparator = !prevDate || currentDate.toDateString() !== prevDate.toDateString();
+            return (
+              <React.Fragment key={index}>
+                {showDateSeparator && (
+                  <div className="text-center my-3">
+                    <span className="text-xs text-gray-500 bg-gray-200/80 px-3 py-1 rounded-full">
+                      {formatDateSeparator(currentDate)}
+                    </span>
+                  </div>
+                )}
+                {/* --- Pass the user's name to the message bubble --- */}
+                <MessageBubble message={msg} userName={userName} />
+              </React.Fragment>
+            );
+          })}
+          {mutation.isPending && (
+            <div className="flex items-start gap-3 mt-4">
+              <BotAvatar />
+              <div className="rounded-xl p-3 max-w-lg bg-white shadow-sm">
+                <p className="text-sm text-gray-500 animate-pulse">Thinking...</p>
+              </div>
             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
-      <div className="p-3 bg-white border-t border-gray-200">
-        <form className="flex items-center space-x-2" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a health question..."
-            className="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
-            autoComplete="off"
-            disabled={mutation.isPending}
-          />
-          <button
-            type="submit"
-            className="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full hover:bg-green-700 disabled:bg-gray-400 transition-colors"
-            aria-label="Send message"
-            disabled={mutation.isPending}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </button>
-        </form>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+        <div className="p-4 bg-white/80 border-t">
+          <form className="flex items-center space-x-3" onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a health question..."
+              className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+              autoComplete="off"
+              disabled={mutation.isPending}
+            />
+            <button
+              type="submit"
+              className="bg-green-600 text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-green-700 disabled:bg-gray-400 transition-colors shadow-lg"
+              aria-label="Send message"
+              disabled={mutation.isPending}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
