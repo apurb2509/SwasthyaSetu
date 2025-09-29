@@ -9,7 +9,7 @@ const SmsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-
 const SchemeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
 const UploadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>;
 
-// --- Updated Data for Components ---
+// --- Data for Components ---
 const heroSlides = [
   { title: "Trusted Health Information for a Stronger India", description: "SwasthyaSetu fights misinformation by providing clear, reliable health advice and connecting you to vital government schemes." },
   { title: "Accessible to All, Everywhere", description: "Reaching every village with crucial health updates and AI assistance via Web, SMS, and eventually WhatsApp." },
@@ -66,8 +66,16 @@ const Home: React.FC = () => {
             />
           ))}
         </div>
-        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-56 p-4 bg-black/30 backdrop-blur-sm text-white">
+        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
+            
+            {/* --- NEW TRANSPARENT LOGO --- */}
+            <img 
+              src="/transparent_swasthyasetu_logo.png" 
+              alt="SwasthyaSetu Transparent Logo" 
+              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6"
+            />
+
             <div className="relative max-w-4xl mx-auto mb-8">
               <div className="overflow-hidden">
                 <div
@@ -96,19 +104,16 @@ const Home: React.FC = () => {
               </button>
             </div>
 
-            {/* --- REDESIGNED FEATURES SECTION WITH FLIP ANIMATION --- */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => (
                 <div key={index} className="card-container h-48 transform transition-transform duration-300 hover:scale-105">
                   <div className="card-inner">
-                    {/* Front of the Card */}
                     <div className="card-front p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20">
                       <div className="flex items-center justify-center h-20 w-20 rounded-full bg-white/80 mx-auto mb-3 shadow-inner">
                         {feature.icon}
                       </div>
                       <h4 className="font-semibold text-white [text-shadow:_0_1px_2px_rgb(0_0_0_/_40%)]">{feature.title}</h4>
                     </div>
-                    {/* Back of the Card */}
                     <div className="card-back p-4 rounded-lg shadow-lg bg-green-600/90 backdrop-blur-md border border-white/20">
                       <p className="text-sm font-semibold text-white">{feature.backContent}</p>
                     </div>
@@ -121,6 +126,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Other sections remain unchanged */}
       <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4">
           <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
@@ -175,7 +181,7 @@ const Home: React.FC = () => {
       
       <footer className="bg-gray-800 text-white text-center p-4">
           <div className="container mx-auto">
-              {isLoading && <p>Connecting...</p>}
+              {isLoading && <p>Connecting to server...</p>}
               {error && <p>❌ Could not connect to server.</p>}
               {data && <p>✅ Backend Status: {data.status}</p>}
           </div>
