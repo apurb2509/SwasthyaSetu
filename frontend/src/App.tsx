@@ -5,13 +5,11 @@ import LoginPage from './pages/LoginPage';
 import Chat from './pages/Chat';
 import ProtectedRoute from './components/ProtectedRoute';
 import Footer from './components/Footer';
-
-// Import the new pages
 import AboutUs from './pages/AboutUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfUse from './pages/TermsOfUse';
 import Disclaimer from './pages/Disclaimer';
-
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -21,19 +19,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/chat"
-            element={
-              <ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>
-            }
-          />
-          {/* Add routes for the new pages */}
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-use" element={<TermsOfUse />} />
           <Route path="/disclaimer" element={<Disclaimer />} />
+
+          {/* Protected Routes */}
+          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         </Routes>
       </main>
       <Footer />
@@ -42,4 +35,3 @@ function App() {
 }
 
 export default App;
-

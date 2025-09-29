@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Carousel from '../components/Carousel';
 import PhoneForm from '../components/PhoneForm';
+import { useTranslation } from 'react-i18next'; // <-- Import the hook
 
 // --- Icon Components (unchanged) ---
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
@@ -9,18 +10,6 @@ const SmsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-
 const SchemeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
 const UploadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>;
 
-// --- Data for Components ---
-const heroSlides = [
-  { title: "Trusted Health Information for a Stronger India", description: "SwasthyaSetu fights misinformation by providing clear, reliable health advice and connecting you to vital government schemes." },
-  { title: "Accessible to All, Everywhere", description: "Reaching every village with crucial health updates and AI assistance via Web, SMS, and eventually WhatsApp." },
-  { title: "Empowering Communities with Knowledge", description: "Simplifying complex schemes like Ayushman Bharat, ensuring every citizen knows their health rights and benefits." }
-];
-const features = [
-  { title: "Multilingual AI Chat", icon: <ChatIcon />, backContent: "Ask health questions in your local language and get instant, reliable answers from our AI." },
-  { title: "SMS & WhatsApp Access", icon: <SmsIcon />, backContent: "Receive crucial health information directly on your basic mobile phone, no internet required." },
-  { title: "Govt. Scheme Info", icon: <SchemeIcon />, backContent: "Understand the benefits of government programs like Ayushman Bharat in simple, clear terms." },
-  { title: "Always Up-to-Date", icon: <UploadIcon />, backContent: "Information is continuously updated by verified health workers and NGOs for local relevance." }
-];
 const backgroundImages = Array.from({ length: 9 }, (_, i) => `/images/heroimage_${i + 1}.jpg`);
 
 const fetchHealthStatus = async () => {
@@ -32,10 +21,24 @@ const fetchHealthStatus = async () => {
 };
 
 const Home: React.FC = () => {
+  const { t } = useTranslation(); // <-- Initialize the hook
   const { data, error, isLoading } = useQuery({ queryKey: ['healthCheck'], queryFn: fetchHealthStatus, retry: false });
   const [currentTextSlide, setCurrentTextSlide] = useState(0);
   const textTimeoutRef = useRef<number | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+
+  // --- Data for Components with Translations ---
+  const heroSlides = [
+    { title: t("HeroTitle1"), description: t("HeroDescription1") },
+    { title: t("HeroTitle2"), description: t("HeroDescription2") },
+    { title: t("HeroTitle3"), description: t("HeroDescription3") }
+  ];
+  const features = [
+    { title: t("Feature1"), icon: <ChatIcon />, backContent: "Ask health questions in your local language and get instant, reliable answers from our AI." },
+    { title: t("Feature2"), icon: <SmsIcon />, backContent: "Receive crucial health information directly on your basic mobile phone, no internet required." },
+    { title: t("Feature3"), icon: <SchemeIcon />, backContent: "Understand the benefits of government programs like Ayushman Bharat in simple, clear terms." },
+    { title: t("Feature4"), icon: <UploadIcon />, backContent: "Information is continuously updated by verified health workers and NGOs for local relevance." }
+  ];
 
   useEffect(() => {
     const bgTimer = setTimeout(() => {
@@ -45,7 +48,7 @@ const Home: React.FC = () => {
   }, [currentBgIndex]);
 
   const resetTextTimeout = () => { if (textTimeoutRef.current) clearTimeout(textTimeoutRef.current); };
-  const nextTextSlide = useCallback(() => { setCurrentTextSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1)); }, []);
+  const nextTextSlide = useCallback(() => { setCurrentTextSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1)); }, [heroSlides.length]);
   useEffect(() => {
     resetTextTimeout();
     textTimeoutRef.current = window.setTimeout(nextTextSlide, 6000);
@@ -69,11 +72,10 @@ const Home: React.FC = () => {
         <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
             
-            {/* --- NEW TRANSPARENT LOGO --- */}
             <img 
               src="/transparent_swasthyasetu_logo.png" 
               alt="SwasthyaSetu Transparent Logo" 
-              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6 opacity-75"
+              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6 opacity-80"
             />
 
             <div className="relative max-w-4xl mx-auto mb-8">
@@ -126,11 +128,10 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Other sections remain unchanged */}
       <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4">
           <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
-            Seasonal Health Awareness
+            {t('Seasonal Health Awareness')}
           </h3>
           <Carousel />
         </div>
@@ -170,7 +171,7 @@ const Home: React.FC = () => {
       <section className="py-12 md:py-16 bg-white">
         <div className="container mx-auto px-4 text-center">
           <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            Get Daily Health Tips
+            {t('Get Daily Health Tips')}
           </h3>
           <p className="text-gray-600 mb-8">
             Subscribe via SMS or WhatsApp for daily updates in your local language.
