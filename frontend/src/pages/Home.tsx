@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'; // <-- Import the hook
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
 const SmsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>;
 const SchemeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
-const UploadIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>;
+const VerifiedIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
 
 const backgroundImages = Array.from({ length: 9 }, (_, i) => `/images/heroimage_${i + 1}.jpg`);
 
@@ -37,7 +37,7 @@ const Home: React.FC = () => {
     { title: t("Feature1"), icon: <ChatIcon />, backContent: "Ask health questions in your local language and get instant, reliable answers from our AI." },
     { title: t("Feature2"), icon: <SmsIcon />, backContent: "Receive crucial health information directly on your basic mobile phone, no internet required." },
     { title: t("Feature3"), icon: <SchemeIcon />, backContent: "Understand the benefits of government programs like Ayushman Bharat in simple, clear terms." },
-    { title: t("Feature4"), icon: <UploadIcon />, backContent: "Information is continuously updated by verified health workers and NGOs for local relevance." }
+    { title: t("Feature4"), icon: <VerifiedIcon />, backContent: "Information is continuously updated by verified health workers and NGOs for local relevance." }
   ];
 
   useEffect(() => {
