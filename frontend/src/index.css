@@ -39,3 +39,18 @@ html, body, #root {
 .card-back {
   transform: rotateY(180deg);
 }
+
+/* --- UPDATED ANIMATION FOR FLOATING ICONS --- */
+@keyframes slow-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-slow-pulse {
+  /* The animation is now faster (2.5 seconds instead of 4) */
+  animation: slow-pulse 2s ease-in-out infinite;
+}
