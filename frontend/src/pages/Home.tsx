@@ -168,16 +168,19 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-{/* Get Daily Health Tips */}
+{/* --- NEW, REDESIGNED Get Daily Health Tips Section --- */}
 <section 
-className="py-12 md:py-20" 
+className="py-12 md:py-20 bg-gray-100" 
 style={{
-  background: 'linear-gradient(to bottom right, #f0fdf4, #ecfeff)'
+  backgroundImage: `
+    radial-gradient(circle at top left, rgba(134, 239, 172, 0.2), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(165, 243, 252, 0.2), transparent 40%)
+  `
 }}
 >
 <div className="container mx-auto px-4 text-center">
   <div 
-    className="max-w-2xl mx-auto bg-white/50 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/30"
+    className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/30"
   >
     <h3 className="text-3xl font-bold text-gray-800 mb-2">
       {t('Get Daily Health Tips')}
