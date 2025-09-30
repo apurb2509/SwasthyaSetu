@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { useTranslation } from 'react-i18next';
 
-// --- Language Toggle Component ---
+// --- Language Toggle Component (code is from previous step, assumed to be correct) ---
 const LanguageToggle: React.FC = () => {
   const { i18n } = useTranslation();
   const { session } = useAuth();
@@ -64,6 +64,9 @@ const Navbar: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // --- NEW STATE FOR LOGOUT CONFIRMATION ---
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -91,10 +94,20 @@ const Navbar: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [dropdownRef]);
 
+  // --- MODIFIED LOGOUT HANDLERS ---
+  const handleLogoutClick = () => {
+    setDropdownOpen(false); // Close the dropdown
+    setShowLogoutConfirm(true); // Show the confirmation modal
+  };
 
-  const handleLogout = async () => {
+  const confirmLogout = async () => {
     await supabase.auth.signOut();
+    setShowLogoutConfirm(false);
     navigate('/');
+  };
+
+  const cancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const getInitials = (name: string) => {
@@ -107,59 +120,84 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-200">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
-            <img className="h-8 w-auto" src="/swasthyasetu_logo.png" alt="SwasthyaSetu Logo" />
-            <span className="text-xl font-bold text-gray-800 hidden sm:block">SwasthyaSetu</span>
-          </Link>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-4">
-              <Link to="/chat" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors duration-200">
-                {t('Chat Assistant')}
-              </Link>
-              
-              {session ? (
-                <>
-                  {/* --- THE ORDER HAS BEEN SWAPPED HERE --- */}
-                  <LanguageToggle />
-                  <div className="relative" ref={dropdownRef}>
-                    <button onClick={() => setDropdownOpen(!dropdownOpen)} className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm focus:outline-none ring-2 ring-offset-2 ring-green-500">
-                      {getInitials(userName)}
-                    </button>
-                    {dropdownOpen && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-10">
-                        <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{t('Profile')}</Link>
-                        <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{t('Logout')}</button>
-                      </div>
-                    )}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <a href={adminPanelUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-200">
-                    {t('Admin Login')}
-                  </a>
-                  <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm">
-                    {t('Login')}
-                  </Link>
-                  <LanguageToggle />
-                </>
-              )}
+    <>
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-200">
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
+              <img className="h-8 w-auto" src="/swasthyasetu_logo.png" alt="SwasthyaSetu Logo" />
+              <span className="text-xl font-bold text-gray-800 hidden sm:block">SwasthyaSetu</span>
+            </Link>
+            <div className="hidden md:block">
+              <div className="ml-10 flex items-center space-x-4">
+                <Link to="/chat" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 hover:bg-gray-100 hover:text-green-600 transition-colors duration-200">
+                  {t('Chat Assistant')}
+                </Link>
+                
+                {session ? (
+                  <>
+                    <LanguageToggle />
+                    <div className="relative" ref={dropdownRef}>
+                      <button onClick={() => setDropdownOpen(!dropdownOpen)} className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-sm focus:outline-none ring-2 ring-offset-2 ring-green-500">
+                        {getInitials(userName)}
+                      </button>
+                      {dropdownOpen && (
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 z-10">
+                          <Link to="/profile" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{t('Profile')}</Link>
+                          <button onClick={handleLogoutClick} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{t('Logout')}</button>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <a href={adminPanelUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-500 border border-gray-400 hover:bg-gray-100 hover:text-gray-800 transition-colors duration-200">
+                      {t('Admin Login')}
+                    </a>
+                    <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors duration-200 shadow-sm">
+                      {t('Login')}
+                    </Link>
+                    <LanguageToggle />
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="-mr-2 flex md:hidden">
+              <button type="button" className="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                <span className="sr-only">Open main menu</span>
+                <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
             </div>
           </div>
-          <div className="-mr-2 flex md:hidden">
-            <button type="button" className="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-              <span className="sr-only">Open main menu</span>
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+        </nav>
+      </header>
+      
+      {/* --- NEW LOGOUT CONFIRMATION MODAL --- */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white max-w-sm w-full rounded-lg shadow-xl p-6 text-center">
+            <h3 className="text-lg font-bold text-gray-800 mb-2">Are you sure?</h3>
+            <p className="text-sm text-gray-600 mb-6">You will be logged out of your account.</p>
+            <div className="flex justify-center gap-4">
+              <button 
+                onClick={cancelLogout}
+                className="px-6 py-2 rounded-md text-sm font-semibold bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors"
+              >
+                No
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="px-6 py-2 rounded-md text-sm font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
+              >
+                Yes
+              </button>
+            </div>
           </div>
         </div>
-      </nav>
-    </header>
+      )}
+    </>
   );
 };
 
