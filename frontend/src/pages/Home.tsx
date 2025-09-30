@@ -168,17 +168,27 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      <section className="py-12 md:py-16 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            {t('Get Daily Health Tips')}
-          </h3>
-          <p className="text-gray-600 mb-8">
-            Subscribe via SMS or WhatsApp for daily updates in your local language.
-          </p>
-          <PhoneForm />
-        </div>
-      </section>
+{/* Get Daily Health Tips */}
+<section 
+className="py-12 md:py-20" 
+style={{
+  background: 'linear-gradient(to bottom right, #f0fdf4, #ecfeff)'
+}}
+>
+<div className="container mx-auto px-4 text-center">
+  <div 
+    className="max-w-2xl mx-auto bg-white/50 backdrop-blur-md p-8 rounded-2xl shadow-lg border border-white/30"
+  >
+    <h3 className="text-3xl font-bold text-gray-800 mb-2">
+      {t('Get Daily Health Tips')}
+    </h3>
+    <p className="text-gray-600 mb-8">
+      Subscribe via SMS or WhatsApp for daily updates in your local language.
+    </p>
+    <PhoneForm />
+  </div>
+</div>
+</section>
     </div>
   );
 };
