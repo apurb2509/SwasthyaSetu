@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import Carousel from '../components/Carousel';
 import PhoneForm from '../components/PhoneForm';
 import { useTranslation } from 'react-i18next';
-import HealthSchemes from '../components/HealthSchemes'; // <-- Import the new component
+import HealthSchemes from '../components/HealthSchemes';
 
 // --- Icon Components (unchanged) ---
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
@@ -23,7 +23,6 @@ const fetchHealthStatus = async () => {
 
 const Home: React.FC = () => {
   const { t } = useTranslation(); 
-  const { data, error, isLoading } = useQuery({ queryKey: ['healthCheck'], queryFn: fetchHealthStatus, retry: false });
   const [currentTextSlide, setCurrentTextSlide] = useState(0);
   const textTimeoutRef = useRef<number | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
@@ -86,13 +85,11 @@ const Home: React.FC = () => {
         </div>
         <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
-            
             <img 
               src="/transparent_swasthyasetu_logo.png" 
               alt="SwasthyaSetu Transparent Logo" 
               className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6 opacity-80"
             />
-
             <div className="relative max-w-4xl mx-auto mb-8">
               <div className="overflow-hidden">
                 <div
@@ -120,7 +117,6 @@ const Home: React.FC = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
-
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => (
                 <div key={index} className="card-container h-48">
@@ -138,13 +134,12 @@ const Home: React.FC = () => {
                 </div>
               ))}
             </div>
-            
           </div>
         </div>
       </section>
-
-      {/* --- NEW Health Schemes Section --- */}
-      <section className="py-12 md:py-20 bg-gray-50">
+      
+      {/* --- BACKGROUND FIX IS HERE --- */}
+      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-gray-800">Know Your Health Schemes</h3>
@@ -154,7 +149,7 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4">
           <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
             {t('Seasonal Health Awareness')}
@@ -163,46 +158,69 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      <section className="py-12 md:py-20 bg-green-50/50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-800">Our Vision and Goals</h3>
-            <p className="text-gray-600 mt-2">Building a healthier, more informed rural India, one query at a time.</p>
-          </div>
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-              <h4 className="font-bold text-lg text-gray-800">Tackle Misinformation with Facts</h4>
-              <p className="mt-1 text-gray-600">Our primary goal is to replace harmful rumors on social media with verified, easy-to-understand health information from trusted sources like the WHO and ICMR.</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-              <h4 className="font-bold text-lg text-gray-800">Ensure Digital Inclusion</h4>
-              <p className="mt-1 text-gray-600">We are committed to bridging the digital divide by providing equal access to information for both smartphone users via our web app and basic phone users through SMS.</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-              <h4 className="font-bold text-lg text-gray-800">Simplify Government Health Schemes</h4>
-              <p className="mt-1 text-gray-600">We aim to demystify complex but vital government schemes, ensuring every citizen understands their entitlements and how to access them.</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-              <h4 className="font-bold text-lg text-gray-800">Promote Preventive Healthcare</h4>
-              <p className="mt-1 text-gray-600">Through daily tips and seasonal awareness, we focus on prevention as the most effective strategy to reduce the burden of disease in rural communities.</p>
-            </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border-l-4 border-green-500">
-              <h4 className="font-bold text-lg text-gray-800">Empower Local Health Workers</h4>
-              <p className="mt-1 text-gray-600">The admin dashboard serves as a tool for local NGOs and ASHA workers, allowing them to keep the AI's knowledge base updated with the latest local health advisories.</p>
-            </div>
-          </div>
+      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h3 className="text-3xl font-bold text-green-900">Our Vision and Goals</h3>
+          <p className="text-green-800 mt-2">Building a healthier, more informed rural India, one query at a time.</p>
         </div>
-      </section>
+    
+        <div className="max-w-4xl mx-auto space-y-8">
+          {[
+            {
+              title: "Tackle Misinformation with Facts",
+              text: "Our primary goal is to replace harmful rumors on social media with verified, easy-to-understand health information from trusted sources like the WHO and ICMR.",
+            },
+            {
+              title: "Ensure Digital Inclusion",
+              text: "We are committed to bridging the digital divide by providing equal access to information for both smartphone users via our web app and basic phone users through SMS.",
+            },
+            {
+              title: "Simplify Government Health Schemes",
+              text: "We aim to demystify complex but vital government schemes, ensuring every citizen understands their entitlements and how to access them.",
+            },
+            {
+              title: "Promote Preventive Healthcare",
+              text: "Through daily tips and seasonal awareness, we focus on prevention as the most effective strategy to reduce the burden of disease in rural communities.",
+            },
+            {
+              title: "Empower Local Health Workers",
+              text: "The admin dashboard serves as a tool for local NGOs and ASHA workers, allowing them to keep the AI's knowledge base updated with the latest local health advisories.",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="relative p-6 rounded-2xl 
+                         shadow-2xl border border-green-200/40
+                         bg-gradient-to-r from-green-100 via-green-50 to-green-100
+                         overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-3xl"
+            >
+              {/* Subtle shimmer effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-green-200/20 via-green-100/10 to-green-200/20 animate-gradientMove pointer-events-none rounded-2xl"></div>
+    
+              <h4 className="font-bold text-lg text-green-900 relative z-10">{item.title}</h4>
+              <p className="mt-2 text-green-800 relative z-10">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    
+      <style>
+        {`
+          @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
+          .animate-gradientMove {
+            background-size: 200% 200%;
+            animation: gradientMove 6s ease infinite;
+          }
+        `}
+      </style>
+    </section>    
       
-      <section 
-        className="py-12 md:py-20 bg-gray-100" 
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at top left, rgba(134, 239, 172, 0.2), transparent 40%),
-            radial-gradient(circle at bottom right, rgba(165, 243, 252, 0.2), transparent 40%)
-          `
-        }}
-      >
+      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4 text-center">
           <div 
             className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/30"
