@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
   });
 
   return (
-    <footer className="bg-gray-800 text-gray-300">
+    <footer className="bg-green-900 text-gray-300">
       <div className="container mx-auto py-8 px-4 text-center">
         
         {/* Row 1: Brand and Description */}
@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
             {error && <p className="flex items-center justify-center gap-2 text-red-400"><span className="h-2 w-2 rounded-full bg-red-500"></span>Backend Offline</p>}
             {data && <p className="flex items-center justify-center gap-2 text-green-400"><span className="h-2 w-2 rounded-full bg-green-500"></span>Backend Online</p>}
           </div>
-          <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} SwasthyaSetu. All Rights Reserved.</p>
+          <p className="text-xs text-gray-300">&copy; {new Date().getFullYear()} SwasthyaSetu. All Rights Reserved.</p>
         </div>
         
       </div>
