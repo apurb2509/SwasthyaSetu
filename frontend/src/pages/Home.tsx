@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Carousel from '../components/Carousel';
 import PhoneForm from '../components/PhoneForm';
-import { useTranslation } from 'react-i18next'; // <-- Import the hook
+import { useTranslation } from 'react-i18next';
+import HealthSchemes from '../components/HealthSchemes'; // <-- Import the new component
 
 // --- Icon Components (unchanged) ---
 const ChatIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>;
@@ -21,13 +22,13 @@ const fetchHealthStatus = async () => {
 };
 
 const Home: React.FC = () => {
-  const { t } = useTranslation(); // <-- Initialize the hook
+  const { t } = useTranslation(); 
   const { data, error, isLoading } = useQuery({ queryKey: ['healthCheck'], queryFn: fetchHealthStatus, retry: false });
   const [currentTextSlide, setCurrentTextSlide] = useState(0);
   const textTimeoutRef = useRef<number | null>(null);
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
+  const [flippedCardIndex, setFlippedCardIndex] = useState(-1);
 
-  // --- Data for Components with Translations ---
   const heroSlides = [
     { title: t("HeroTitle1"), description: t("HeroDescription1") },
     { title: t("HeroTitle2"), description: t("HeroDescription2") },
@@ -39,6 +40,20 @@ const Home: React.FC = () => {
     { title: t("Feature3"), icon: <SchemeIcon />, backContent: "Understand the benefits of government programs like Ayushman Bharat in simple, clear terms." },
     { title: t("Feature4"), icon: <VerifiedIcon />, backContent: "Information is continuously updated by verified health workers and NGOs for local relevance." }
   ];
+
+  useEffect(() => {
+    const flipTimer = setInterval(() => {
+      setFlippedCardIndex(prevIndex => {
+        const nextIndex = (prevIndex + 1) % features.length;
+        setTimeout(() => {
+          setFlippedCardIndex(-1);
+        }, 2000); 
+        return nextIndex;
+      });
+    }, 3000); 
+
+    return () => clearInterval(flipTimer);
+  }, [features.length]);
 
   useEffect(() => {
     const bgTimer = setTimeout(() => {
@@ -108,8 +123,8 @@ const Home: React.FC = () => {
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => (
-                <div key={index} className="card-container h-48 transform transition-transform duration-300 hover:scale-105">
-                  <div className="card-inner">
+                <div key={index} className="card-container h-48">
+                  <div className={`card-inner ${index === flippedCardIndex ? 'is-flipped' : ''}`}>
                     <div className="card-front p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20">
                       <div className="flex items-center justify-center h-20 w-20 rounded-full bg-white/80 mx-auto mb-3 shadow-inner">
                         {feature.icon}
@@ -125,6 +140,17 @@ const Home: React.FC = () => {
             </div>
             
           </div>
+        </div>
+      </section>
+
+      {/* --- NEW Health Schemes Section --- */}
+      <section className="py-12 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold text-gray-800">Know Your Health Schemes</h3>
+            <p className="text-gray-600 mt-2">Learn about key initiatives by the National Health Mission (NHM).</p>
+          </div>
+          <HealthSchemes />
         </div>
       </section>
 
@@ -168,30 +194,29 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-{/* --- NEW, REDESIGNED Get Daily Health Tips Section --- */}
-<section 
-className="py-12 md:py-20 bg-gray-100" 
-style={{
-  backgroundImage: `
-    radial-gradient(circle at top left, rgba(134, 239, 172, 0.2), transparent 40%),
-    radial-gradient(circle at bottom right, rgba(165, 243, 252, 0.2), transparent 40%)
-  `
-}}
->
-<div className="container mx-auto px-4 text-center">
-  <div 
-    className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/30"
-  >
-    <h3 className="text-3xl font-bold text-gray-800 mb-2">
-      {t('Get Daily Health Tips')}
-    </h3>
-    <p className="text-gray-600 mb-8">
-      Subscribe via SMS or WhatsApp for daily updates in your local language.
-    </p>
-    <PhoneForm />
-  </div>
-</div>
-</section>
+      <section 
+        className="py-12 md:py-20 bg-gray-100" 
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at top left, rgba(134, 239, 172, 0.2), transparent 40%),
+            radial-gradient(circle at bottom right, rgba(165, 243, 252, 0.2), transparent 40%)
+          `
+        }}
+      >
+        <div className="container mx-auto px-4 text-center">
+          <div 
+            className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/30"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-2">
+              {t('Get Daily Health Tips')}
+            </h3>
+            <p className="text-gray-600 mb-8">
+              Subscribe via SMS or WhatsApp for daily updates in your local language.
+            </p>
+            <PhoneForm />
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
