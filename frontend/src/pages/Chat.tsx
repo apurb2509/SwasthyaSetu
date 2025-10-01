@@ -186,7 +186,7 @@ const Chat: React.FC = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a health question..."
+              placeholder="Ask a health related question..."
               className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               autoComplete="off"
               disabled={mutation.isPending}
