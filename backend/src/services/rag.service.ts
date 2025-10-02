@@ -2,7 +2,7 @@ import path from 'path';
 import { connect } from 'vectordb';
 import { LanceDB } from '@langchain/community/vectorstores/lancedb';
 import { HuggingFaceTransformersEmbeddings } from '@langchain/community/embeddings/hf_transformers';
-import { ChatOllama } from '@langchain/community/chat_models/ollama';
+import { ChatGroq } from '@langchain/groq';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import {
   RunnableSequence,
@@ -13,14 +13,15 @@ import { PromptTemplate } from '@langchain/core/prompts';
 const lancedbDir = path.join(process.cwd(), 'lancedb');
 const collectionName = 'swasthya_setu';
 
-// 1. Initialize the components
+// Initialize the components
 const embeddings = new HuggingFaceTransformersEmbeddings({
   modelName: 'Xenova/all-MiniLM-L6-v2',
 });
 
-const llm = new ChatOllama({
-  model: 'mistral',
-  baseUrl: 'http://localhost:11434', // Default Ollama URL
+// --- THE FIX IS HERE: Changed 'modelName' to 'model' ---
+const llm = new ChatGroq({
+  apiKey: process.env.GROQ_API_KEY,
+  model: 'llama3-8b-8192', // The correct property is 'model'
   temperature: 0.3,
 });
 
@@ -34,7 +35,7 @@ Question:
 {question}`
 );
 
-// 2. Main function to handle a user's question
+// Main function to handle a user's question
 export async function askQuestion(question: string): Promise<string> {
   try {
     // Connect to the existing LanceDB vector store
@@ -42,9 +43,9 @@ export async function askQuestion(question: string): Promise<string> {
     const table = await db.openTable(collectionName);
     const vectorStore = new LanceDB(embeddings, { table });
 
-    const retriever = vectorStore.asRetriever(4); // Retrieve top 4 relevant documents
+    const retriever = vectorStore.asRetriever(4);
 
-    // 3. Create the RAG chain
+    // Create the RAG chain
     const chain = RunnableSequence.from([
       {
         context: retriever.pipe(
@@ -57,7 +58,7 @@ export async function askQuestion(question: string): Promise<string> {
       new StringOutputParser(),
     ]);
 
-    console.log('Invoking RAG chain...');
+    console.log('Invoking RAG chain with Groq...');
     const result = await chain.invoke(question);
     console.log('RAG chain finished.');
 
