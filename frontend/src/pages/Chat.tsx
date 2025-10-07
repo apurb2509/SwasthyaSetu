@@ -9,11 +9,17 @@ interface Message {
   created_at: string;
 }
 
-// --- API Functions (unchanged) ---
+// Get the base URL from environment variables for production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+// --- API Functions (UPDATED FOR DEPLOYMENT) ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
-  const response = await fetch('/api/chat/history', { headers: { 'Authorization': `Bearer ${session.access_token}` } });
+  // Use the full backend URL
+  const response = await fetch(`${API_BASE_URL}/api/chat/history`, {
+    headers: { 'Authorization': `Bearer ${session.access_token}` }
+  });
   if (!response.ok) throw new Error('Failed to fetch history');
   return response.json();
 };
@@ -21,12 +27,20 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
-  const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, body: JSON.stringify({ question }), });
+  // Use the full backend URL
+  const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`
+    },
+    body: JSON.stringify({ question }),
+  });
   if (!response.ok) throw new Error('Network response was not ok');
   return response.json();
 };
 
-// --- Helper Components ---
+// --- Helper Components (unchanged) ---
 const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => (
   <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
     {initials}
@@ -70,10 +84,9 @@ const Chat: React.FC = () => {
   const queryClient = useQueryClient();
   const [input, setInput] = useState('');
   const [displayedMessages, setDisplayedMessages] = useState<Message[]>([]);
-  const [userName, setUserName] = useState(''); // <-- NEW: State for user's name
+  const [userName, setUserName] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // --- NEW: Fetch user's name from profile ---
   useEffect(() => {
     if (session) {
       const getProfile = async () => {
@@ -165,7 +178,6 @@ const Chat: React.FC = () => {
                     </span>
                   </div>
                 )}
-                {/* --- Pass the user's name to the message bubble --- */}
                 <MessageBubble message={msg} userName={userName} />
               </React.Fragment>
             );
@@ -186,7 +198,7 @@ const Chat: React.FC = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a health related question..."
+              placeholder="Ask a health question..."
               className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
               autoComplete="off"
               disabled={mutation.isPending}
@@ -197,7 +209,7 @@ const Chat: React.FC = () => {
               aria-label="Send message"
               disabled={mutation.isPending}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </button>
