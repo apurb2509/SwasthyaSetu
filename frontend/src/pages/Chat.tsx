@@ -9,14 +9,13 @@ interface Message {
   created_at: string;
 }
 
-// Get the base URL from environment variables for production
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// ✅ Ensure this is set correctly even if .env is missing
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://your-backend-deployment-url.vercel.app';
 
-// --- API Functions (UPDATED FOR DEPLOYMENT) ---
+// --- API Functions ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
-  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat/history`, { 
     headers: { 'Authorization': `Bearer ${session.access_token}` } 
   });
@@ -27,7 +26,6 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
-  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat`, { 
     method: 'POST', 
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, 
@@ -43,7 +41,13 @@ const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => (
     {initials}
   </div>
 );
-const BotAvatar = () => ( <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm"><img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" className="w-full h-full object-contain" /></div> );
+
+const BotAvatar = () => (
+  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm">
+    <img src="/swasthyasetu_logo.png" onError={(e) => (e.currentTarget.src = '/pwa-192x192.png')} alt="SwasthyaDoot" className="w-full h-full object-contain" />
+  </div>
+);
+
 const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ message, userName }) => {
   const isUser = message.sender === 'user';
   const time = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
@@ -67,12 +71,13 @@ const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ messa
     </div>
   );
 };
+
 const formatDateSeparator = (date: Date) => {
-    const day = date.getDate();
-    const month = date.toLocaleString('en-GB', { month: 'long' });
-    const year = date.getFullYear();
-    const dayOfWeek = date.toLocaleString('en-GB', { weekday: 'short' }).toUpperCase();
-    return `${day} ${month}, ${year} (${dayOfWeek})`;
+  const day = date.getDate();
+  const month = date.toLocaleString('en-GB', { month: 'long' });
+  const year = date.getFullYear();
+  const dayOfWeek = date.toLocaleString('en-GB', { weekday: 'short' }).toUpperCase();
+  return `${day} ${month}, ${year} (${dayOfWeek})`;
 };
 
 // --- Main Chat Component ---
@@ -117,7 +122,12 @@ const Chat: React.FC = () => {
   const mutation = useMutation({
     mutationFn: postQuestion,
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['chatHistory'] }); },
-    onError: (error: any) => { setDisplayedMessages(prev => [...prev, { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }]); }
+    onError: (error: any) => {
+      setDisplayedMessages(prev => [
+        ...prev,
+        { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }
+      ]);
+    }
   });
 
   useEffect(() => {
@@ -189,7 +199,6 @@ const Chat: React.FC = () => {
               aria-label="Send message"
               disabled={mutation.isPending}
             >
-              {/* --- THE SVG FIX IS HERE --- */}
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
