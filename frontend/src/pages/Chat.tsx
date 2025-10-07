@@ -17,8 +17,8 @@ const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
   // Use the full backend URL
-  const response = await fetch(`${API_BASE_URL}/api/chat/history`, {
-    headers: { 'Authorization': `Bearer ${session.access_token}` }
+  const response = await fetch(`${API_BASE_URL}/api/chat/history`, { 
+    headers: { 'Authorization': `Bearer ${session.access_token}` } 
   });
   if (!response.ok) throw new Error('Failed to fetch history');
   return response.json();
@@ -28,19 +28,16 @@ const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
   // Use the full backend URL
-  const response = await fetch(`${API_BASE_URL}/api/chat`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.access_token}`
-    },
-    body: JSON.stringify({ question }),
+  const response = await fetch(`${API_BASE_URL}/api/chat`, { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, 
+    body: JSON.stringify({ question }), 
   });
   if (!response.ok) throw new Error('Network response was not ok');
   return response.json();
 };
 
-// --- Helper Components (unchanged) ---
+// --- Helper Components ---
 const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => (
   <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
     {initials}
@@ -90,14 +87,8 @@ const Chat: React.FC = () => {
   useEffect(() => {
     if (session) {
       const getProfile = async () => {
-        const { data } = await supabase
-          .from('profiles')
-          .select('name')
-          .eq('id', session.user.id)
-          .single();
-        if (data && data.name) {
-          setUserName(data.name);
-        }
+        const { data } = await supabase.from('profiles').select('name').eq('id', session.user.id).single();
+        if (data && data.name) setUserName(data.name);
       };
       getProfile();
     }
@@ -125,15 +116,8 @@ const Chat: React.FC = () => {
 
   const mutation = useMutation({
     mutationFn: postQuestion,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chatHistory'] });
-    },
-    onError: (error: any) => {
-      setDisplayedMessages(prev => [
-        ...prev,
-        { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }
-      ]);
-    }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['chatHistory'] }); },
+    onError: (error: any) => { setDisplayedMessages(prev => [...prev, { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }]); }
   });
 
   useEffect(() => {
@@ -143,11 +127,7 @@ const Chat: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || mutation.isPending) return;
-    const userMessage: Message = {
-      content: input,
-      sender: 'user',
-      created_at: new Date().toISOString()
-    };
+    const userMessage: Message = { content: input, sender: 'user', created_at: new Date().toISOString() };
     setDisplayedMessages(prevMessages => [...prevMessages, userMessage]);
     mutation.mutate(input);
     setInput('');
@@ -209,7 +189,7 @@ const Chat: React.FC = () => {
               aria-label="Send message"
               disabled={mutation.isPending}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </button>
