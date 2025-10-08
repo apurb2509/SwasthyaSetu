@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const DashboardPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [statusMessage, setStatusMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -25,31 +25,23 @@ const DashboardPage: React.FC = () => {
     setStatusMessage('Uploading and processing...');
 
     try {
-      // Get the current user's session to get the auth token
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-
       if (sessionError || !session) {
         throw new Error('Not authenticated. Please log in again.');
       }
-
       const formData = new FormData();
       formData.append('document', selectedFile);
-
-      const response = await fetch('/api/admin/upload', {
+      
+      const response = await fetch(`${API_BASE_URL}/api/admin/upload`, {
         method: 'POST',
-        headers: {
-          // This header is crucial for our protected endpoint
-          'Authorization': `Bearer ${session.access_token}`,
-        },
+        headers: { 'Authorization': `Bearer ${session.access_token}` },
         body: formData,
       });
 
       const result = await response.json();
-
       if (!response.ok) {
         throw new Error(result.error || 'Upload failed.');
       }
-
       setStatusMessage(result.message);
     } catch (error: any) {
       setStatusMessage(`Error: ${error.message}`);
@@ -59,32 +51,15 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/login');
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-md text-sm font-medium"
-          >
-            Logout
-          </button>
-        </header>
-
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Admin Dashboard</h1>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Upload New Document</h2>
-          <h4 className="text-xl mb-4">These resources will be used to train and refine the LLM model of SwasthyaDoot.</h4>
           <form onSubmit={handleUpload}>
             <div className="mb-4">
-              <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">
-                Select PDF File
-              </label>
+              <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">Select PDF File</label>
               <input
                 id="file-upload"
                 type="file"
