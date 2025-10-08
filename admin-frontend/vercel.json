@@ -1,21 +1,8 @@
 {
-    "rewrites": [
-      {
-        "source": "/(.*)",
-        "destination": "/index.html"
-      }
-    ]
-  }
-  ```
-  
-  ### The Final Deployment Step
-  
-  After you have created and saved this new `vercel.json` file inside your `admin-frontend` directory, you must push this change to your GitHub repository.
-  
-  1.  From the **root `SwasthyaSetu` directory**, run:
-      ```bash
-      git add .
-      git commit -m "fix(deploy): add vercel.json for admin-frontend routing"
-      git push origin main
-      
-  
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
