@@ -38,7 +38,7 @@ const PORT = process.env.PORT || 3001;
 
 // --- PRODUCTION CORS CONFIGURATION ---
 const allowedOrigins = [
-    'https://swasthyasetu-frontend-1-eg4l00ww1-apurb2509s-projects.vercel.app', // Your main frontend URL
+    'https://swasthyasetu-frontend-1-eg4l00ww1-apurb2509s-projects.vercel.app', // Your main frontend URL from the error log
     'https://swasthyasetu-admin-frontend-1-6eup0moxp-apurb2509s-projects.vercel.app'  // Your admin frontend URL
     // Add any other primary domains Vercel gives you if needed
 ];
