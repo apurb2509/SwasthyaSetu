@@ -9,14 +9,13 @@ interface Message {
   created_at: string;
 }
 
-// Get the base URL from environment variables for production
+// Use the environment variable for the live backend URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 // --- API Functions (UPDATED FOR DEPLOYMENT) ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
-  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat/history`, { 
     headers: { 'Authorization': `Bearer ${session.access_token}` } 
   });
@@ -27,7 +26,6 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
-  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat`, { 
     method: 'POST', 
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, 

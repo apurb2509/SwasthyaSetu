@@ -1,11 +1,9 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-// Get the base URL from environment variables for production
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const fetchHealthStatus = async () => {
-  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/health`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
@@ -23,14 +21,12 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-800 text-gray-300">
       <div className="container mx-auto py-8 px-4 text-center">
-        
         <div className="mb-6">
           <h3 className="font-bold text-white text-xl mb-2">SwasthyaSetu</h3>
           <p className="text-sm max-w-2xl mx-auto">
             Your trusted partner in rural health awareness, bridging the information gap with technology to build a healthier, more informed India.
           </p>
         </div>
-        
         <div className="mb-6">
           <ul className="flex justify-center items-center space-x-4 sm:space-x-8">
             <li><a href="/about-us" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-white transition-colors">About Us</a></li>
@@ -39,7 +35,6 @@ const Footer: React.FC = () => {
             <li><a href="/disclaimer" target="_blank" rel="noopener noreferrer" className="text-sm hover:text-white transition-colors">Disclaimer</a></li>
           </ul>
         </div>
-
         <div className="border-t border-gray-700 pt-6">
           <div className="text-sm mb-2">
             {isLoading && <p>Connecting to server...</p>}
@@ -48,7 +43,6 @@ const Footer: React.FC = () => {
           </div>
           <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} SwasthyaSetu. All Rights Reserved.</p>
         </div>
-        
       </div>
     </footer>
   );
