@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
+// Use the environment variable for the API base URL, which you set on Vercel
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const DashboardPage: React.FC = () => {
@@ -32,6 +33,7 @@ const DashboardPage: React.FC = () => {
       const formData = new FormData();
       formData.append('document', selectedFile);
       
+      // Use the full, absolute backend URL for the API call
       const response = await fetch(`${API_BASE_URL}/api/admin/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${session.access_token}` },
