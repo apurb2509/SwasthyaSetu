@@ -9,13 +9,14 @@ interface Message {
   created_at: string;
 }
 
-// ✅ Ensure this is set correctly even if .env is missing
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://your-backend-deployment-url.vercel.app';
+// Get the base URL from environment variables for production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
-// --- API Functions ---
+// --- API Functions (UPDATED FOR DEPLOYMENT) ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
+  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat/history`, { 
     headers: { 'Authorization': `Bearer ${session.access_token}` } 
   });
@@ -26,6 +27,7 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
+  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/chat`, { 
     method: 'POST', 
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, 
@@ -36,22 +38,11 @@ const postQuestion = async (question: string): Promise<{ answer: string }> => {
 };
 
 // --- Helper Components ---
-const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => (
-  <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-    {initials}
-  </div>
-);
-
-const BotAvatar = () => (
-  <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm">
-    <img src="/swasthyasetu_logo.png" onError={(e) => (e.currentTarget.src = '/pwa-192x192.png')} alt="SwasthyaDoot" className="w-full h-full object-contain" />
-  </div>
-);
-
+const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => ( <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{initials}</div> );
+const BotAvatar = () => ( <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm"><img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" className="w-full h-full object-contain" /></div> );
 const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ message, userName }) => {
   const isUser = message.sender === 'user';
   const time = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-  
   const getInitials = (name: string) => {
     if (!name) return '?';
     const names = name.split(' ');
@@ -60,7 +51,6 @@ const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ messa
     }
     return name.substring(0, 2).toUpperCase();
   };
-
   return (
     <div className={`flex items-end gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {isUser ? <UserAvatar initials={getInitials(userName)} /> : <BotAvatar />}
@@ -71,13 +61,12 @@ const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ messa
     </div>
   );
 };
-
 const formatDateSeparator = (date: Date) => {
-  const day = date.getDate();
-  const month = date.toLocaleString('en-GB', { month: 'long' });
-  const year = date.getFullYear();
-  const dayOfWeek = date.toLocaleString('en-GB', { weekday: 'short' }).toUpperCase();
-  return `${day} ${month}, ${year} (${dayOfWeek})`;
+    const day = date.getDate();
+    const month = date.toLocaleString('en-GB', { month: 'long' });
+    const year = date.getFullYear();
+    const dayOfWeek = date.toLocaleString('en-GB', { weekday: 'short' }).toUpperCase();
+    return `${day} ${month}, ${year} (${dayOfWeek})`;
 };
 
 // --- Main Chat Component ---
@@ -122,12 +111,7 @@ const Chat: React.FC = () => {
   const mutation = useMutation({
     mutationFn: postQuestion,
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['chatHistory'] }); },
-    onError: (error: any) => {
-      setDisplayedMessages(prev => [
-        ...prev,
-        { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }
-      ]);
-    }
+    onError: (error: any) => { setDisplayedMessages(prev => [...prev, { sender: 'error', content: `Sorry, an error occurred: ${error.message}`, created_at: new Date().toISOString() }]); }
   });
 
   useEffect(() => {
