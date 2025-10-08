@@ -6,8 +6,11 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
 import { PromptTemplate } from '@langchain/core/prompts';
 
-if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
-    throw new Error('Pinecone environment variables must be set.');
+// --- PRODUCTION SAFEGUARD ---
+// This code runs when the server starts. If any key is missing, the server will
+// crash with a clear error message in the Render logs.
+if (!process.env.GROQ_API_KEY || !process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
+    throw new Error('FATAL ERROR: Missing GROQ or Pinecone environment variables on the server.');
 }
 
 const embeddings = new HuggingFaceTransformersEmbeddings({
