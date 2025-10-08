@@ -7,14 +7,11 @@ import multer from 'multer';
 import cron from 'node-cron';
 import { createClient, User } from '@supabase/supabase-js';
 
-// --- Create necessary directories on startup ---
+// --- Logging and Directory Setup (unchanged) ---
 const dataDir = path.join(process.cwd(), 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
-  console.log(`Created data directory at: ${dataDir}`);
 }
-
-// --- Crash and Error Logging Setup ---
 const logStream = fs.createWriteStream(path.join(process.cwd(), 'error.log'), { flags: 'a' });
 process.on('uncaughtException', (err) => {
   const timestamp = new Date().toISOString();
@@ -39,8 +36,25 @@ import { getChatHistory, saveChatMessage } from './services/chat.service';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// --- PRODUCTION CORS CONFIGURATION ---
+const allowedOrigins = [
+    'https://swasthyasetu-frontend-apurb2509s-projects.vercel.app', // Your main frontend URL
+    'https://swasthyasetu-admin-frontend-1-6eup0moxp-apurb2509s-projects.vercel.app'  // Your admin frontend URL
+    // Add any other primary domains Vercel gives you if needed
+];
+const corsOptions: cors.CorsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+app.use(cors(corsOptions));
+// ---
+
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 app.use(express.json());
 
 const storage = multer.diskStorage({
@@ -56,8 +70,7 @@ const getUser = async (token: string): Promise<User | null> => {
     return user;
 };
 
-// --- API ROUTES ---
-
+// --- API ROUTES (unchanged) ---
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'UP' }));
 
 app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
@@ -69,25 +82,21 @@ app.post('/api/chat', authMiddleware, async (req: Request, res: Response) => {
     }
     const user = await getUser(token);
     if (!user) return res.status(401).json({ error: 'Invalid token' });
-
     await saveChatMessage(user.id, 'user', question as string);
     const answer = await askQuestion(question as string);
     await saveChatMessage(user.id, 'bot', answer);
-
     res.status(200).json({ answer });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get an answer.' });
   }
 });
 
-app.get('/api/chat/history', authMiddleware, async (req: Request, res: Response) => {
+app.get('/api/chat/history', authMiddleware, async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
         if (!token) return res.status(401).json({ error: 'Unauthorized' });
-        
         const user = await getUser(token);
         if (!user) return res.status(401).json({ error: 'Invalid user' });
-
         const history = await getChatHistory(user.id);
         res.status(200).json(history);
     } catch (error) {
@@ -116,11 +125,8 @@ app.post('/api/admin/upload',
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded.' });
     }
-    
     res.status(200).json({ message: 'File received. Knowledge base update started in the background.' });
-
     console.log(`File uploaded: ${req.file.originalname}. Triggering background re-ingestion...`);
-    
     ingestDocuments().then(() => {
       console.log('✅ Background ingestion completed successfully.');
     }).catch(err => {
@@ -135,30 +141,10 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).json({ error: 'An unexpected server error occurred.' });
 });
 
+// --- SCHEDULED TASKS (unchanged) ---
+cron.schedule('0 8 * * *', () => { console.log('--- Running Daily SMS Task ---'); sendDailyHealthTips(); }, { scheduled: true, timezone: "Asia/Kolkata" });
+cron.schedule('0 9 * * 0', () => { console.log('--- Running Weekly Newsletter Task ---'); sendWeeklyNewsletter(); }, { scheduled: true, timezone: "Asia/Kolkata" });
 
-// --- SCHEDULED TASKS ---
-console.log('Setting up scheduled tasks...');
-
-// Daily SMS Health Tips (runs every day at 8:00 AM)
-cron.schedule('0 8 * * *', () => {
-  console.log('--- Running Daily SMS Task ---');
-  sendDailyHealthTips();
-}, {
-  scheduled: true,
-  timezone: "Asia/Kolkata"
-});
-
-// Weekly Email Newsletter (runs every Sunday at 9:00 AM)
-cron.schedule('0 9 * * 0', () => {
-  console.log('--- Running Weekly Newsletter Task ---');
-  sendWeeklyNewsletter();
-}, {
-  scheduled: true,
-  timezone: "Asia/Kolkata"
-});
-
-
-// --- START SERVER ---
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
