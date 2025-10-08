@@ -38,12 +38,13 @@ const PORT = process.env.PORT || 3001;
 
 // --- PRODUCTION CORS CONFIGURATION ---
 const allowedOrigins = [
-    'https://swasthyasetu-frontend-apurb2509s-projects.vercel.app', // Your main frontend URL
+    'https://swasthyasetu-frontend-1-eg4l00ww1-apurb2509s-projects.vercel.app', // Your main frontend URL
     'https://swasthyasetu-admin-frontend-1-6eup0moxp-apurb2509s-projects.vercel.app'  // Your admin frontend URL
     // Add any other primary domains Vercel gives you if needed
 ];
 const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests) and from the allowed list
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
