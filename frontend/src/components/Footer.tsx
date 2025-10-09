@@ -1,9 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+// Add this line at the top, just below the imports
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const fetchHealthStatus = async () => {
+  // Use the full backend URL
   const response = await fetch(`${API_BASE_URL}/api/health`);
   if (!response.ok) {
     throw new Error('Network response was not ok');

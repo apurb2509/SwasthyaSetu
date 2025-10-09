@@ -9,12 +9,17 @@ interface Message {
   created_at: string;
 }
 
+// Add this line at the top, just below the imports
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+// --- API Functions (UPDATED FOR DEPLOYMENT) ---
 const fetchChatHistory = async (): Promise<Message[]> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) return [];
-  const response = await fetch(`${API_BASE_URL}/api/chat/history`, { headers: { 'Authorization': `Bearer ${session.access_token}` } });
+  // Use the full backend URL
+  const response = await fetch(`${API_BASE_URL}/api/chat/history`, { 
+    headers: { 'Authorization': `Bearer ${session.access_token}` } 
+  });
   if (!response.ok) throw new Error('Failed to fetch history');
   return response.json();
 };
@@ -22,7 +27,12 @@ const fetchChatHistory = async (): Promise<Message[]> => {
 const postQuestion = async (question: string): Promise<{ answer: string }> => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error("Not authenticated");
-  const response = await fetch(`${API_BASE_URL}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, body: JSON.stringify({ question }), });
+  // Use the full backend URL
+  const response = await fetch(`${API_BASE_URL}/api/chat`, { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }, 
+    body: JSON.stringify({ question }), 
+  });
   if (!response.ok) throw new Error('Network response was not ok');
   return response.json();
 };
