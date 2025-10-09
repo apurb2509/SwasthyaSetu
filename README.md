@@ -71,11 +71,28 @@ Admins can:
 
 ## 🚀 **Getting Started (Local Development)**
 
-### **Prerequisites**
-Ensure you have the following installed:
-- [Node.js](https://nodejs.org/)
-- [npm](https://www.npmjs.com/)
-- [Git](https://git-scm.com/)
+Follow the steps below to run **SwasthyaSetu** locally on your system.
 
 ---
+
+### 🧩 **Prerequisites**
+
+Before starting, ensure you have these installed:
+
+- [Node.js (v18+)](https://nodejs.org/)
+- [npm](https://www.npmjs.com/)
+- [Git](https://git-scm.com/)
+- Access to the required **API keys** (Groq, Pinecone, Supabase, Twilio, etc.)
+
+---
+
+### ⚙️ **1. Clone the Repository**
+
+```bash
+# Clone the repo
+git clone https://github.com/your-username/SwasthyaSetu.git
+
+# Navigate into the project
+cd SwasthyaSetu
+
 
