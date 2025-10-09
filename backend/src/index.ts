@@ -36,10 +36,10 @@ import { getChatHistory, saveChatMessage } from './services/chat.service';
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// --- PRODUCTION CORS CONFIGURATION ---
+// --- PRODUCTION CORS CONFIGURATION (UPDATED) ---
 const allowedOrigins = [
-    'https://swasthyasetu-frontend-1-gop379k6w-apurb2509s-projects.vercel.app', // Your main frontend URL from the error log
-    'https://swasthyasetu-admin-frontend-1-f99hk8n0p-apurb2509s-projects.vercel.app' // Your admin frontend URL
+    'https://swasthyasetu-frontend-1-12sunwkk7-apurb2509s-projects.vercel.app', // Your main frontend URL from the error log
+    'https://swasthyasetu-admin-frontend-1-gkv6pax8r-apurb2509s-projects.vercel.app'  // Your admin frontend URL
 ];
 const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
