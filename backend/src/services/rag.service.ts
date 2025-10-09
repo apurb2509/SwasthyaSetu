@@ -1,16 +1,17 @@
+import path from 'path';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { PineconeStore } from '@langchain/pinecone';
 import { HuggingFaceTransformersEmbeddings } from '@langchain/community/embeddings/hf_transformers';
 import { ChatGroq } from '@langchain/groq';
 import { StringOutputParser } from '@langchain/core/output_parsers';
-import { RunnableSequence, RunnablePassthrough } from '@langchain/core/runnables';
+import {
+  RunnableSequence,
+  RunnablePassthrough,
+} from '@langchain/core/runnables';
 import { PromptTemplate } from '@langchain/core/prompts';
 
-// --- PRODUCTION SAFEGUARD ---
-// This code runs when the server starts. If any key is missing, the server will
-// crash with a clear error message in the Render logs.
-if (!process.env.GROQ_API_KEY || !process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX) {
-    throw new Error('FATAL ERROR: Missing GROQ or Pinecone environment variables on the server.');
+if (!process.env.PINECONE_API_KEY || !process.env.PINECONE_INDEX || !process.env.GROQ_API_KEY) {
+    throw new Error('FATAL ERROR: Missing AI service environment variables on the server.');
 }
 
 const embeddings = new HuggingFaceTransformersEmbeddings({
@@ -19,7 +20,8 @@ const embeddings = new HuggingFaceTransformersEmbeddings({
 
 const llm = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY,
-  model: 'llama3-8b-8192',
+  // --- THE FIX IS HERE: Changed to a current, supported model ---
+  model: 'llama3-70b-8192', 
   temperature: 0.3,
 });
 
