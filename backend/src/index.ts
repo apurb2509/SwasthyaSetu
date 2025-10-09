@@ -38,22 +38,21 @@ const PORT = process.env.PORT || 3001;
 
 // --- PRODUCTION CORS CONFIGURATION ---
 const allowedOrigins = [
-    'https://swasthyasetu-frontend-1-eg4l00ww1-apurb2509s-projects.vercel.app', // Your main frontend URL from the error log
-    'https://swasthyasetu-admin-frontend-1-6eup0moxp-apurb2509s-projects.vercel.app'  // Your admin frontend URL
-    // Add any other primary domains Vercel gives you if needed
+    'https://swasthyasetu-frontend-1-gop379k6w-apurb2509s-projects.vercel.app', // Your main frontend URL from the error log
+    'https://swasthyasetu-admin-frontend-1-f99hk8n0p-apurb2509s-projects.vercel.app' // Your admin frontend URL
 ];
 const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests) and from the allowed list
+        // Allow requests with no origin (like mobile apps, curl) and from our Vercel domains
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
+            console.error('CORS Error: Request from origin', origin, 'is not allowed.');
             callback(new Error('Not allowed by CORS'));
         }
     }
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 // ---
 
 app.use(express.urlencoded({ extended: true }));
