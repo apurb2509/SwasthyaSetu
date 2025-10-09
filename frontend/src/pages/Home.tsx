@@ -172,7 +172,7 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <section className="relative w-full aspect-video bg-gray-800">
+      <section className="relative w-full bg-gray-800">
         <div className="absolute inset-0 z-0">
           {backgroundImages.map((img, index) => (
             <div
@@ -185,14 +185,18 @@ const Home: React.FC = () => {
             />
           ))}
         </div>
-        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-12 sm:pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
-          <div className="container mx-auto text-center">
+
+        <div className="relative z-10 w-full flex flex-col justify-start items-center pt-12 sm:pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
+          <div className="container mx-auto text-center space-y-6 sm:space-y-8">
+            {/* Logo */}
             <img
               src="/transparent_swasthyasetu_logo.png"
               alt="SwasthyaSetu Transparent Logo"
-              className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mx-auto mb-4 sm:mb-6 opacity-80"
+              className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mx-auto opacity-80"
             />
-            <div className="relative max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto mb-6 sm:mb-8">
+
+            {/* Text Carousel */}
+            <div className="relative max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto">
               <div className="overflow-hidden">
                 <div
                   className="flex transition-transform duration-700 ease-in-out"
@@ -202,7 +206,7 @@ const Home: React.FC = () => {
                 >
                   {heroSlides.map((slide, index) => (
                     <div key={index} className="w-full flex-shrink-0 px-2">
-                      <div className="min-h-32 sm:min-h-36 md:min-h-40 flex flex-col justify-center">
+                      <div className="min-h-[8rem] sm:min-h-[9rem] md:min-h-[10rem] flex flex-col justify-center">
                         <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-3 sm:mb-4 [text-shadow:_0_2px_4px_rgb(0_0_0_/_50%)]">
                           {slide.title}
                         </h2>
@@ -214,6 +218,8 @@ const Home: React.FC = () => {
                   ))}
                 </div>
               </div>
+
+              {/* Carousel Buttons */}
               <button
                 onClick={goToPrevTextSlide}
                 className="absolute top-1/2 -translate-y-1/2 left-0 sm:left-2 md:left-0 lg:-left-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors"
@@ -253,24 +259,32 @@ const Home: React.FC = () => {
                 </svg>
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+
+            {/* Feature Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto w-full px-2 sm:px-4 mt-4 sm:mt-6 md:mt-8">
               {features.map((feature, index) => (
-                <div key={index} className="card-container h-36 sm:h-40 md:h-44 lg:h-48">
+                <div
+                  key={index}
+                  className="card-container w-full min-h-[9rem] sm:min-h-[10rem] md:min-h-[11rem]"
+                >
                   <div
                     className={`card-inner ${
                       index === flippedCardIndex ? "is-flipped" : ""
                     }`}
                   >
-                    <div className="card-front p-3 sm:p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20">
-                      <div className="flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-white/80 mx-auto mb-2 sm:mb-3 shadow-inner">
+                    {/* Front Side */}
+                    <div className="card-front p-3 sm:p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20 flex flex-col justify-center items-center">
+                      <div className="flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-white/80 mx-auto mb-3 sm:mb-4 shadow-inner">
                         {feature.icon}
                       </div>
-                      <h4 className="font-semibold text-sm sm:text-base text-white [text-shadow:_0_1px_2px_rgb(0_0_0_/_40%)]">
+                      <h4 className="font-semibold text-sm sm:text-base text-white text-center [text-shadow:_0_1px_2px_rgb(0_0_0_/_40%)]">
                         {feature.title}
                       </h4>
                     </div>
-                    <div className="card-back p-3 sm:p-4 rounded-lg shadow-lg bg-green-600/90 backdrop-blur-md border border-white/20">
-                      <p className="text-xs sm:text-sm font-semibold text-white">
+
+                    {/* Back Side */}
+                    <div className="card-back p-3 sm:p-4 rounded-lg shadow-lg bg-green-600/90 backdrop-blur-md border border-white/20 flex flex-col justify-center items-center">
+                      <p className="text-xs sm:text-sm font-semibold text-white text-center leading-snug">
                         {feature.backContent}
                       </p>
                     </div>
@@ -350,7 +364,9 @@ const Home: React.FC = () => {
                 <h4 className="font-bold text-base sm:text-lg text-green-900 relative z-10">
                   {item.title}
                 </h4>
-                <p className="mt-2 text-sm sm:text-base text-green-800 relative z-10">{item.text}</p>
+                <p className="mt-2 text-sm sm:text-base text-green-800 relative z-10">
+                  {item.text}
+                </p>
               </div>
             ))}
           </div>
