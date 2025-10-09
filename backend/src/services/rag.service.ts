@@ -20,8 +20,8 @@ const embeddings = new HuggingFaceTransformersEmbeddings({
 
 const llm = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY,
-  // --- THE FIX IS HERE: Changed to a current, supported model ---
-  model: 'llama3-70b-8192', 
+  // --- THE FINAL FIX IS HERE: Using a current, supported model ---
+  model: 'llama-3.1-8b-instant', 
   temperature: 0.3,
 });
 
