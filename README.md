@@ -90,7 +90,7 @@ Before starting, ensure you have these installed:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/SwasthyaSetu.git
+git clone https://github.com/apurb2509/SwasthyaSetu.git
 
 # Navigate into the project
 cd SwasthyaSetu
