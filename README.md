@@ -63,7 +63,7 @@ Admins can:
 |-----------|--------------|
 | **Frontend (User & Admin)** | React + TypeScript + Vite, Tailwind CSS, React Router, TanStack Query, i18next, vite-plugin-pwa |
 | **Backend** | Node.js + Express.js (TypeScript), Twilio Webhooks, node-cron, Multer, Nodemailer |
-| **AI & Data Pipeline** | LangChain.js, Groq (LLaMA 3.1), HuggingFace Transformers (Xenova/all-MiniLM-L6-v2), Pinecone |
+| **AI & Data Pipeline** | LangChain.js, Groq (llama-3.1-8b-instant), Pinecone |
 | **Database & Auth** | Supabase (PostgreSQL + Auth) |
 | **Deployment** | Vercel (Frontend), Render (Backend), Twilio (SMS) |
 
