@@ -111,6 +111,10 @@ const HealthSchemes: React.FC = () => {
     } else {
       document.body.style.overflow = "auto";
     }
+    // Cleanup function to restore scrolling when component unmounts
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, [selectedScheme]);
 
   const handleOpen = (scheme: Scheme) => {
@@ -128,7 +132,7 @@ const HealthSchemes: React.FC = () => {
   return (
     <>
       {/* Grid of Scheme Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 py-6">
         {schemesData.map((scheme) => (
           <button
             key={scheme.name}
@@ -159,15 +163,15 @@ const HealthSchemes: React.FC = () => {
           onClick={handleClose}
         >
           <div
-            className={`bg-white/95 max-w-2xl w-full rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-green-200 transform transition-all duration-300 origin-top-right ${
+            className={`bg-white/95 max-w-2xl w-full rounded-2xl shadow-2xl flex flex-col max-h-[90vh] border border-green-200 transform transition-all duration-300 ${
               animateOut
-                ? "opacity-0 translate-y-6"
-                : "opacity-100 translate-y-0 animate-openBox"
+                ? "opacity-0 scale-95"
+                : "opacity-100 scale-100 animate-openBox"
             }`}
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
           >
-            <header className="p-5 flex justify-between items-center border-b bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl sticky top-0 text-white shadow-md">
-              <h3 className="text-xl font-bold">{selectedScheme.name}</h3>
+            <header className="p-4 sm:p-5 flex justify-between items-center border-b bg-gradient-to-r from-green-600 to-green-700 rounded-t-2xl sticky top-0 text-white shadow-md z-10">
+              <h3 className="text-lg sm:text-xl font-bold">{selectedScheme.name}</h3>
               <button
                 onClick={handleClose}
                 className="text-white hover:text-gray-200 text-3xl font-light leading-none"
@@ -175,7 +179,7 @@ const HealthSchemes: React.FC = () => {
                 &times;
               </button>
             </header>
-            <div className="p-6 overflow-y-auto space-y-5 text-gray-700">
+            <div className="p-5 sm:p-6 overflow-y-auto space-y-5 text-gray-700">
               <div>
                 <h4 className="font-semibold text-green-700">Objective</h4>
                 <p className="mt-1 text-sm text-gray-600">
@@ -209,11 +213,11 @@ const HealthSchemes: React.FC = () => {
       <style>
         {`
           @keyframes openBox {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
           }
           .animate-openBox {
-            animation: openBox 0.35s ease-out;
+            animation: openBox 0.3s ease-out;
           }
           @keyframes gradientMove {
             0% { background-position: 0% 50%; }
@@ -221,16 +225,17 @@ const HealthSchemes: React.FC = () => {
             100% { background-position: 0% 50%; }
           }
           .animated-gradient {
-            background: linear-gradient(#1f7039, #247b40, #218f46, #26b254, #218f46, #247b40, #1f7039);
+            background: linear-gradient(-45deg, #1f7039, #247b40, #218f46, #26b254, #218f46, #247b40, #1f7039);
             background-size: 400% 400%;
-            animation: gradientMove 8s ease infinite;
+            animation: gradientMove 10s ease infinite;
           }
           @keyframes shimmer {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
+            0% { transform: translateX(-150%) rotate(45deg); }
+            100% { transform: translateX(150%) rotate(45deg); }
           }
           .animate-shimmer {
-            animation: shimmer 6s infinite linear;
+            animation: shimmer 5s infinite linear;
+            opacity: 0.3;
           }
         `}
       </style>

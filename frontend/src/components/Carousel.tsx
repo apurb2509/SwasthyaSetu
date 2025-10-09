@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
-// --- NEW SVG Icons for a more professional card layout ---
+// --- SVG Icons for a more professional card layout ---
 const SymptomsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline-block text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5-2.5-6.5s-7 3-7 7a8 8 0 0011.657 6.657l6.343 6.343-1.414 1.414-6.343-6.343z" /></svg>;
 const PreventionIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline-block text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>;
 const DosIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 inline-block text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
@@ -85,15 +85,15 @@ const Carousel: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto relative group">
-      <div className="w-full h-auto md:h-96 rounded-2xl shadow-2xl overflow-hidden relative bg-gradient-to-br from-green-50 via-teal-50 to-cyan-50 border-2 border-white">
+      <div className="w-full h-auto min-h-[24rem] md:h-96 rounded-2xl shadow-2xl overflow-hidden relative bg-gradient-to-br from-green-50 via-teal-50 to-cyan-50 border-2 border-white">
         <div 
           className="flex transition-transform duration-700 ease-in-out h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
           {diseases.map((disease) => (
-            <div key={disease.name} className="w-full h-full flex-shrink-0 p-6 md:p-8">
+            <div key={disease.name} className="w-full h-full flex-shrink-0 p-4 sm:p-6 md:p-8">
               <div className="w-full h-full flex flex-col text-gray-800">
-                <h4 className="text-2xl md:text-3xl font-bold text-green-800 mb-4 text-center">{disease.name}</h4>
+                <h4 className="text-xl sm:text-2xl md:text-3xl font-bold text-green-800 mb-4 text-center">{disease.name}</h4>
                 
                 <div className="text-sm font-semibold mb-4 bg-blue-100/50 text-blue-800 p-3 rounded-lg flex items-center"><PreventionIcon /> {disease.prevention}</div>
                 
@@ -104,7 +104,7 @@ const Carousel: React.FC = () => {
                       {disease.symptoms.map(item => <li key={item}>{item}</li>)}
                     </ul>
                   </div>
-                  <div className="grid grid-rows-2 gap-y-3">
+                  <div className="grid grid-rows-2 gap-y-3 mt-4 md:mt-0">
                     <div>
                       <h5 className="font-bold mb-2 text-green-700 flex items-center"><DosIcon /> Do's</h5>
                       <ul className="list-disc list-inside space-y-1 pl-4 text-green-900">
@@ -125,14 +125,14 @@ const Carousel: React.FC = () => {
         </div>
       </div>
       
-      <button onClick={goToPrev} className="absolute top-1/2 -translate-y-1/2 -left-4 md:-left-6 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500">
+      <button onClick={goToPrev} className="absolute top-1/2 -translate-y-1/2 -left-3 sm:-left-4 md:-left-6 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500 z-10">
         <span className="sr-only">Previous Slide</span>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
       </button>
 
-      <button onClick={goToNext} className="absolute top-1/2 -translate-y-1/2 -right-4 md:-right-6 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500">
+      <button onClick={goToNext} className="absolute top-1/2 -translate-y-1/2 -right-3 sm:-right-4 md:-right-6 p-2 bg-white/80 hover:bg-white rounded-full shadow-lg border transition-all focus:outline-none focus:ring-2 focus:ring-green-500 z-10">
         <span className="sr-only">Next Slide</span>
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
       </button>
 
       <div className="flex justify-center pt-5">
@@ -149,4 +149,4 @@ const Carousel: React.FC = () => {
   );
 };
 
-export default Carousel;    
+export default Carousel;

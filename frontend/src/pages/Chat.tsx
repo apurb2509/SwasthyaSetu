@@ -28,7 +28,9 @@ const postQuestion = async (question: string): Promise<{ answer: string }> => {
 };
 
 const UserAvatar: React.FC<{ initials: string }> = ({ initials }) => ( <div className="w-8 h-8 rounded-full bg-green-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">{initials}</div> );
+
 const BotAvatar = () => ( <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center p-1 flex-shrink-0 shadow-sm"><img src="/swasthyasetu_logo.png" alt="SwasthyaDoot" className="w-full h-full object-contain" /></div> );
+
 const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ message, userName }) => {
   const isUser = message.sender === 'user';
   const time = message.created_at ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
@@ -39,15 +41,16 @@ const MessageBubble: React.FC<{ message: Message; userName: string }> = ({ messa
     return name.substring(0, 2).toUpperCase();
   };
   return (
-    <div className={`flex items-end gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex items-end gap-2 sm:gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {isUser ? <UserAvatar initials={getInitials(userName)} /> : <BotAvatar />}
-      <div className={`rounded-xl p-3 max-w-lg shadow-sm ${isUser ? 'bg-green-600 text-white' : 'bg-white text-gray-800 border'}`}>
+      <div className={`rounded-xl p-3 max-w-xs sm:max-w-sm md:max-w-lg shadow-sm ${isUser ? 'bg-green-600 text-white' : 'bg-white text-gray-800 border'}`}>
         <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
         {time && <p className={`text-xs mt-1 text-right ${isUser ? 'text-green-200' : 'text-gray-400'}`}>{time}</p>}
       </div>
     </div>
   );
 };
+
 const formatDateSeparator = (date: Date) => {
     const day = date.getDate();
     const month = date.toLocaleString('en-GB', { month: 'long' });
@@ -106,9 +109,12 @@ const Chat: React.FC = () => {
   if (isLoading) { return <div className="flex items-center justify-center h-full">Loading chat history...</div>; }
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-green-50 to-cyan-50 p-4 sm:p-6 md:p-8 flex items-center justify-center">
+    <div className="w-full h-full bg-gradient-to-br from-green-50 to-cyan-50 p-2 sm:p-4 md:p-6 lg:p-8 flex items-center justify-center">
       <div className="max-w-4xl w-full h-full max-h-[calc(100vh-8rem)] bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl flex flex-col border border-white">
-        <header className="p-4 text-center border-b-2 border-green-200/50"><h1 className="text-2xl font-bold text-green-800">SwasthyaDoot</h1><p className="text-sm text-gray-500">Your AI Health Assistant</p></header>
+        <header className="p-4 text-center border-b-2 border-green-200/50">
+            <h1 className="text-xl sm:text-2xl font-bold text-green-800">SwasthyaDoot</h1>
+            <p className="text-xs sm:text-sm text-gray-500">Your AI Health Assistant</p>
+        </header>
         <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {displayedMessages.map((msg, index) => {
             const currentDate = new Date(msg.created_at);
@@ -125,9 +131,9 @@ const Chat: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
         <div className="p-4 bg-white/80 border-t">
-          <form className="flex items-center space-x-3" onSubmit={handleSubmit}>
+          <form className="flex items-center space-x-2 sm:space-x-3" onSubmit={handleSubmit}>
             <input type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Ask a health question..." className="flex-1 p-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" autoComplete="off" disabled={mutation.isPending} />
-            <button type="submit" className="bg-green-600 text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-green-700 disabled:bg-gray-400 transition-colors shadow-lg" aria-label="Send message" disabled={mutation.isPending}>
+            <button type="submit" className="bg-green-600 text-white w-12 h-12 flex items-center justify-center rounded-full hover:bg-green-700 disabled:bg-gray-400 transition-colors shadow-lg" aria-label="Send message" disabled={!input.trim() || mutation.isPending}>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
             </button>
           </form>

@@ -9,7 +9,7 @@ import HealthSchemes from "../components/HealthSchemes";
 const ChatIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-green-700"
+    className="h-8 w-8 sm:h-10 sm:w-10 text-green-700"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -25,7 +25,7 @@ const ChatIcon = () => (
 const SmsIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-green-700"
+    className="h-8 w-8 sm:h-10 sm:w-10 text-green-700"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -41,7 +41,7 @@ const SmsIcon = () => (
 const SchemeIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-green-700"
+    className="h-8 w-8 sm:h-10 sm:w-10 text-green-700"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -57,7 +57,7 @@ const SchemeIcon = () => (
 const VerifiedIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-green-700"
+    className="h-8 w-8 sm:h-10 sm:w-10 text-green-700"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -185,14 +185,14 @@ const Home: React.FC = () => {
             />
           ))}
         </div>
-        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
+        <div className="relative z-10 w-full h-full flex flex-col justify-start items-center pt-12 sm:pt-16 md:pt-24 p-4 bg-black/30 backdrop-blur-sm text-white">
           <div className="container mx-auto text-center">
             <img
               src="/transparent_swasthyasetu_logo.png"
               alt="SwasthyaSetu Transparent Logo"
-              className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6 opacity-80"
+              className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 mx-auto mb-4 sm:mb-6 opacity-80"
             />
-            <div className="relative max-w-4xl mx-auto mb-8">
+            <div className="relative max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl mx-auto mb-6 sm:mb-8">
               <div className="overflow-hidden">
                 <div
                   className="flex transition-transform duration-700 ease-in-out"
@@ -202,11 +202,11 @@ const Home: React.FC = () => {
                 >
                   {heroSlides.map((slide, index) => (
                     <div key={index} className="w-full flex-shrink-0 px-2">
-                      <div className="min-h-36 md:min-h-40 flex flex-col justify-center">
-                        <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 [text-shadow:_0_2px_4px_rgb(0_0_0_/_50%)]">
+                      <div className="min-h-32 sm:min-h-36 md:min-h-40 flex flex-col justify-center">
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-3 sm:mb-4 [text-shadow:_0_2px_4px_rgb(0_0_0_/_50%)]">
                           {slide.title}
                         </h2>
-                        <p className="text-md md:text-xl text-gray-200 max-w-3xl mx-auto [text-shadow:_0_1px_2px_rgb(0_0_0_/_50%)]">
+                        <p className="text-sm sm:text-base md:text-xl text-gray-200 max-w-xs sm:max-w-lg md:max-w-3xl mx-auto [text-shadow:_0_1px_2px_rgb(0_0_0_/_50%)]">
                           {slide.description}
                         </p>
                       </div>
@@ -216,11 +216,11 @@ const Home: React.FC = () => {
               </div>
               <button
                 onClick={goToPrevTextSlide}
-                className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors"
+                className="absolute top-1/2 -translate-y-1/2 left-0 sm:left-2 md:left-0 lg:-left-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-5 w-5 sm:h-6 sm:w-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -235,11 +235,11 @@ const Home: React.FC = () => {
               </button>
               <button
                 onClick={goToNextTextSlide}
-                className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors"
+                className="absolute top-1/2 -translate-y-1/2 right-0 sm:right-2 md:right-0 lg:-right-10 p-2 bg-white/30 hover:bg-white/50 rounded-full shadow-md transition-colors"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white"
+                  className="h-5 w-5 sm:h-6 sm:w-6 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -253,24 +253,24 @@ const Home: React.FC = () => {
                 </svg>
               </button>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
               {features.map((feature, index) => (
-                <div key={index} className="card-container h-48">
+                <div key={index} className="card-container h-36 sm:h-40 md:h-44 lg:h-48">
                   <div
                     className={`card-inner ${
                       index === flippedCardIndex ? "is-flipped" : ""
                     }`}
                   >
-                    <div className="card-front p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20">
-                      <div className="flex items-center justify-center h-20 w-20 rounded-full bg-white/80 mx-auto mb-3 shadow-inner">
+                    <div className="card-front p-3 sm:p-4 rounded-lg shadow-lg bg-white/30 backdrop-blur-md border border-white/20">
+                      <div className="flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-white/80 mx-auto mb-2 sm:mb-3 shadow-inner">
                         {feature.icon}
                       </div>
-                      <h4 className="font-semibold text-white [text-shadow:_0_1px_2px_rgb(0_0_0_/_40%)]">
+                      <h4 className="font-semibold text-sm sm:text-base text-white [text-shadow:_0_1px_2px_rgb(0_0_0_/_40%)]">
                         {feature.title}
                       </h4>
                     </div>
-                    <div className="card-back p-4 rounded-lg shadow-lg bg-green-600/90 backdrop-blur-md border border-white/20">
-                      <p className="text-sm font-semibold text-white">
+                    <div className="card-back p-3 sm:p-4 rounded-lg shadow-lg bg-green-600/90 backdrop-blur-md border border-white/20">
+                      <p className="text-xs sm:text-sm font-semibold text-white">
                         {feature.backContent}
                       </p>
                     </div>
@@ -282,14 +282,13 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* --- BACKGROUND FIX IS HERE --- */}
-      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
+      <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-gray-800">
+          <div className="text-center mb-10 md:mb-12">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-800">
               Know Your Health Schemes
             </h3>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-600 mt-2 text-sm sm:text-base">
               Learn about key initiatives by the National Health Mission (NHM).
             </p>
           </div>
@@ -297,28 +296,28 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-12 md:py-16 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
+      <section className="py-10 sm:py-12 md:py-16 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+          <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6 md:mb-8">
             {t("Seasonal Health Awareness")}
           </h3>
           <Carousel />
         </div>
       </section>
 
-      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
+      <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-green-900">
+          <div className="text-center mb-10 md:mb-12">
+            <h3 className="text-2xl sm:text-3xl font-bold text-green-900">
               Our Vision and Goals
             </h3>
-            <p className="text-green-800 mt-2">
+            <p className="text-green-800 mt-2 text-sm sm:text-base">
               Building a healthier, more informed rural India, one query at a
               time.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto space-y-8">
+          <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
             {[
               {
                 title: "Tackle Misinformation with Facts",
@@ -343,15 +342,15 @@ const Home: React.FC = () => {
             ].map((item, i) => (
               <div
                 key={i}
-                className="relative p-6 rounded-2xl 
+                className="relative p-4 sm:p-6 rounded-2xl 
              shadow-lg border border-green-100
              bg-green-50
              transform transition-all duration-500 hover:scale-105 hover:shadow-2xl"
               >
-                <h4 className="font-bold text-lg text-green-900 relative z-10">
+                <h4 className="font-bold text-base sm:text-lg text-green-900 relative z-10">
                   {item.title}
                 </h4>
-                <p className="mt-2 text-green-800 relative z-10">{item.text}</p>
+                <p className="mt-2 text-sm sm:text-base text-green-800 relative z-10">{item.text}</p>
               </div>
             ))}
           </div>
@@ -359,6 +358,34 @@ const Home: React.FC = () => {
 
         <style>
           {`
+          .card-container {
+            perspective: 1000px;
+          }
+          .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+          }
+          .card-container:hover .card-inner, .card-inner.is-flipped {
+            transform: rotateY(180deg);
+          }
+          .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+          .card-back {
+            transform: rotateY(180deg);
+          }
           @keyframes gradientMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -372,13 +399,13 @@ const Home: React.FC = () => {
         </style>
       </section>
 
-      <section className="py-12 md:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
+      <section className="py-10 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-b from-green-50 via-green-100 to-green-50">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-white/30">
-            <h3 className="text-3xl font-bold text-gray-800 mb-2">
+          <div className="max-w-2xl mx-auto bg-white/60 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl border border-white/30">
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
               {t("Get Daily Health Tips")}
             </h3>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
               Subscribe via SMS or WhatsApp for daily updates in your local
               language.
             </p>
